@@ -1,0 +1,55 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+package-dir = { "" = "src" }
+
+[tool.mypy]
+strict = true
+warn_unused_configs = true
+check_untyped_defs = true
+follow_imports = "silent"
+warn_redundant_casts = true
+warn_unused_ignores = true
+disallow_any_generics = true
+no_implicit_reexport = true
+disallow_untyped_defs = true
+
+[tool.ruff]
+line-length = 120
+
+[project]
+name = "just_chat"
+version = "0.0.0"
+authors = [
+    { name = "Sequew", email = "kryseyt@gmail.com" },
+]
+description = "Chat with Clean Architecture, TDD and more"
+requires-python = ">=3.11"
+dependencies = [
+    "fastapi",
+    "passlib[argon2]",
+    "types-passlib",
+    "uvicorn",
+    "gunicorn",
+]
+
+[project.optional-dependencies]
+test = [
+    "pytest",
+    "httpx"
+]
+lint = [
+    "ruff"
+]
+types-checking = [
+    "mypy",
+    "types-passlib"
+]
+dev = [
+    "just_chat[test, lint, types-checking]"
+]
+
+[project.urls]
+"Homepage" = "https://github.com/KrySeyt/JustChat"

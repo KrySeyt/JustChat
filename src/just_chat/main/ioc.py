@@ -5,7 +5,7 @@ from passlib.handlers.argon2 import argon2
 
 from just_chat.adapters.database.ram_session_db import RAMSessionGateway
 from just_chat.adapters.database.ram_user_db import RAMUserGateway
-from just_chat.adapters.security.argon2_password_provider import HashingPasswordProvider
+from just_chat.adapters.security.password_provider import HashingPasswordProvider
 from just_chat.application.chat.create_chat import CreateChat
 from just_chat.application.chat.delete_chat import DeleteChat
 from just_chat.application.chat.get_chat import GetChat

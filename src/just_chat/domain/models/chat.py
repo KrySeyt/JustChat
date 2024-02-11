@@ -6,7 +6,7 @@ from .user import UserId
 ChatId = NewType("ChatId", int)
 
 
-@dataclass(frozen=True)
+@dataclass()
 class Chat:
     id: ChatId | None
     title: str

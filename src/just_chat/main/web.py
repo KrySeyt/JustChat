@@ -3,7 +3,7 @@ from typing import TypeVar, Callable
 from fastapi import FastAPI
 from passlib.handlers.argon2 import argon2
 
-from just_chat.adapters.security.argon2_password_provider import HashingPasswordProvider
+from just_chat.adapters.security.password_provider import HashingPasswordProvider
 from just_chat.application.common.password_provider import PasswordProvider
 from just_chat.main.ioc import ChatIoC, UserIoC
 from just_chat.presentation.interactor_factory.chat import ChatInteractorFactory

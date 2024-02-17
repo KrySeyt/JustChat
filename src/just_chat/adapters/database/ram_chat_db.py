@@ -1,3 +1,4 @@
+import threading
 from dataclasses import asdict
 
 from just_chat.adapters.database.exceptions import ChatNotFound
@@ -8,12 +9,15 @@ from just_chat.domain.models.chat import ChatId, Chat
 class RAMChatGateway(ChatGateway):
     RAM_CHATS_DB: list[Chat] = []
     next_chat_id = 0
+    next_chat_id_lock = threading.Lock()
 
     def save_chat(self, chat: Chat) -> Chat:
         chat_in_db = Chat(
             **asdict(chat) | {"id": self.next_chat_id}
         )
-        type(self).next_chat_id += 1
+
+        with self.next_chat_id_lock:
+            type(self).next_chat_id += 1
 
         self.RAM_CHATS_DB.append(chat_in_db)
 

@@ -1,3 +1,4 @@
+import threading
 from dataclasses import asdict
 
 from just_chat.adapters.database.exceptions import UserNotFound
@@ -8,12 +9,15 @@ from just_chat.domain.models.user import UserId, User
 class RAMUserGateway(UserGateway):
     RAM_USERS_DB: list[User] = []
     next_user_id = 0
+    next_user_id_lock = threading.Lock()
 
     def save_user(self, user: User) -> User:
         user_in_db = User(
             **asdict(user) | {"id": self.next_user_id}
         )
-        type(self).next_user_id += 1
+
+        with self.next_user_id_lock:
+            type(self).next_user_id += 1
 
         self.RAM_USERS_DB.append(user_in_db)
 

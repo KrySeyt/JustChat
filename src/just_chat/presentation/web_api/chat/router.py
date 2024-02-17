@@ -1,3 +1,3 @@
 from fastapi import APIRouter
 
-chat_router = APIRouter(prefix="/chats", tags=["Chat"])
+chat_router = APIRouter(prefix="/chat", tags=["Chat"])

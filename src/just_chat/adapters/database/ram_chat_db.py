@@ -13,7 +13,7 @@ class RAMChatGateway(ChatGateway):
         chat_in_db = Chat(
             **asdict(chat) | {"id": self.next_chat_id}
         )
-        self.next_chat_id += 1
+        type(self).next_chat_id += 1
 
         self.RAM_CHATS_DB.append(chat_in_db)
 

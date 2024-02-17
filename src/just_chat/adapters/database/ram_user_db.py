@@ -13,7 +13,7 @@ class RAMUserGateway(UserGateway):
         user_in_db = User(
             **asdict(user) | {"id": self.next_user_id}
         )
-        self.next_user_id += 1
+        type(self).next_user_id += 1
 
         self.RAM_USERS_DB.append(user_in_db)
 

@@ -37,7 +37,7 @@ def test_get_user_by_id(client, user_gateway):
     assert response_json["username"] == user.username
 
 
-@pytest.mark.skip
+@pytest.mark.xfail
 def test_delete_user_by_id(client, user_gateway):
     user = user_gateway.save_user(User(
         id=None,

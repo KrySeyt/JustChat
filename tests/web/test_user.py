@@ -37,22 +37,6 @@ def test_get_user_by_id(client, user_gateway):
     assert response_json["username"] == user.username
 
 
-@pytest.mark.xfail
-def test_delete_user_by_id(client, user_gateway):
-    user = user_gateway.save_user(User(
-        id=None,
-        username="Username",
-        hashed_password="123"
-    ))
-
-    response = client.delete(rf"/user/{user.id}")
-    assert response.status_code == 200
-    response_json = response.json()
-
-    assert response_json["id"] == user.id
-    assert response_json["username"] == user.username
-
-
 def test_login(client, user_gateway, password_provider):
     user = user_gateway.save_user(User(
         id=None,

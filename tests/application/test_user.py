@@ -11,7 +11,7 @@ from just_chat.application.common.password_provider import PasswordProvider
 from just_chat.application.common.session_gateway import SessionGateway
 from just_chat.application.common.user_gateway import UserGateway
 from just_chat.application.user.create_user import CreateUser, NewUserDTO
-from just_chat.application.user.get_user import GetUser
+from just_chat.application.user.get_user_by_id import GetUserById
 from just_chat.application.user.login import Login, LoginDTO
 from just_chat.domain.models.user import User, UserId
 from just_chat.domain.services.user import UserService
@@ -83,7 +83,7 @@ def test_create_user(user_gateway, password_provider):
 
 
 def test_get_user(user_gateway):
-    interactor = GetUser(
+    interactor = GetUserById(
         user_service=UserService(),
         user_gateway=user_gateway,
     )

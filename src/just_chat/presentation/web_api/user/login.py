@@ -24,5 +24,5 @@ def login(
     except (UserNotFound, WrongCredentials):
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST)
 
-    response.set_cookie("Authorization", value=rf"basic {token}")
+    response.set_cookie("token", value=rf"basic {token}")
 

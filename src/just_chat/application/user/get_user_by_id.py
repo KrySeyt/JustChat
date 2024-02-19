@@ -12,7 +12,7 @@ class UserDTO:
     username: str
 
 
-class GetUser(Interactor[UserId, UserDTO]):
+class GetUserById(Interactor[UserId, UserDTO]):
     def __init__(self, user_service: UserService, user_gateway: UserGateway) -> None:
         self._user_service = user_service
         self._user_gateway = user_gateway

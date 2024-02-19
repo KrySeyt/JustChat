@@ -1,5 +1,6 @@
 import threading
 from dataclasses import asdict
+from typing import Container
 
 from just_chat.adapters.database.exceptions import UserNotFound
 from just_chat.application.common.user_gateway import UserGateway
@@ -36,6 +37,13 @@ class RAMUserGateway(UserGateway):
                 return user
 
         raise UserNotFound(f"User with username {username} not found")
+
+    def get_random_user(self, exclude: Container[UserId]) -> User:
+        for user in self.RAM_USERS_DB:
+            if user.id not in exclude:
+                return user
+
+        raise UserNotFound("User not found")
 
     def delete_user_by_id(self, id_: UserId) -> User:
         user = self.get_user_by_id(id_)

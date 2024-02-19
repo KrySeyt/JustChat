@@ -52,4 +52,4 @@ def test_login(client, user_gateway, password_provider):
         }
     )
     assert response.status_code == 200
-    assert "Authorization" in response.cookies
+    assert "token" in response.cookies

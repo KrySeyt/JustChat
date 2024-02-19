@@ -60,7 +60,7 @@ def test_create_chat_with_random_user(
     )
 
     assert response.status_code == 200
-    assert "Authorization" in response.cookies
+    assert "token" in response.cookies
 
     response = client.post(r"/chat/random")
 

@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from typing import Container
 
 from just_chat.domain.models.user import User, UserId
 
@@ -14,6 +15,10 @@ class UserGateway(ABC):
 
     @abstractmethod
     def get_user_by_username(self, username: str) -> User:
+        raise NotImplementedError
+
+    @abstractmethod
+    def get_random_user(self, exclude: Container[UserId]) -> User:
         raise NotImplementedError
 
     @abstractmethod

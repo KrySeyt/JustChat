@@ -40,12 +40,12 @@ def test_create_chat_with_random_user(
         user_gateway,
         password_provider
 ):
-    user1 = user_gateway.save_user(User(
+    user_gateway.save_user(User(
         id=None,
         username="username13",
         hashed_password=password_provider.hash_password("123")
     ))
-    user2 = user_gateway.save_user(User(
+    user_gateway.save_user(User(
         id=None,
         username="Username2",
         hashed_password=password_provider.hash_password("123")

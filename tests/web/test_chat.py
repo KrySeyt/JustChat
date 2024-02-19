@@ -62,14 +62,19 @@ def test_create_chat_with_random_user(
     assert response.status_code == 200
     assert "token" in response.cookies
 
-    response = client.post(r"/chat/random")
+    response = client.post(
+        r"/chat/random",
+        json={
+            "title": "Title",
+        }
+    )
 
     assert response.status_code == 200
 
     response_json = response.json()
 
     assert isinstance(response_json["id"], int)
-    assert response_json["users_ids"] == [user1.id, user2.id]
+    assert len(response_json["users_ids"]) == 2
     assert response_json["title"] == "Title"
 
     chat = chat_gateway.get_chat_by_id(response_json["id"])

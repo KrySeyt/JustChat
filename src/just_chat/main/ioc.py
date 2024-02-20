@@ -3,6 +3,7 @@ from typing import Generator
 
 from passlib.handlers.argon2 import argon2
 
+from just_chat.adapters.database.ram_message_db import RAMMessageGateway
 from just_chat.adapters.database.ram_session_db import RAMSessionGateway
 from just_chat.adapters.database.ram_user_db import RAMUserGateway
 from just_chat.adapters.security.password_provider import HashingPasswordProvider
@@ -11,6 +12,7 @@ from just_chat.application.chat.create_chat_with_random_user import CreateChatWi
 from just_chat.application.chat.delete_chat import DeleteChat
 from just_chat.application.chat.get_chat import GetChat
 from just_chat.application.common.id_provider import IdProvider
+from just_chat.application.message.create_message import CreateMessage
 from just_chat.application.user.create_user import CreateUser
 from just_chat.application.user.get_user_by_id import GetUserById
 from just_chat.application.user.get_user_by_token import GetUserIdByToken
@@ -19,6 +21,7 @@ from just_chat.domain.services.chat import ChatService
 from just_chat.domain.services.user import UserService
 from just_chat.presentation.interactor_factory.chat import ChatInteractorFactory
 from just_chat.adapters.database.ram_chat_db import RAMChatGateway
+from just_chat.presentation.interactor_factory.message import MessageInteractorFactory
 from just_chat.presentation.interactor_factory.user import UserInteractorFactory
 
 
@@ -82,4 +85,18 @@ class UserIoC(UserInteractorFactory):
             self._user_gateway,
             self._session_gateway,
             self._password_provider,
+        )
+
+
+class MessageIoC(MessageInteractorFactory):
+    def __init__(self) -> None:
+        self._chat_gateway = RAMChatGateway()
+        self._message_gateway = RAMMessageGateway()
+
+    @contextmanager
+    def create_message(self, id_provider: IdProvider) -> Generator[CreateMessage, None, None]:
+        yield CreateMessage(
+            self._message_gateway,
+            self._chat_gateway,
+            id_provider,
         )

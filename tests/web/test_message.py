@@ -7,7 +7,7 @@ from just_chat.domain.models.user import User
 def test_send_message_with_access(client, chat_gateway, user_gateway, message_gateway, password_provider):
     user1 = user_gateway.save_user(User(
         id=None,
-        username="user1383",
+        username="send_message_with_access",
         hashed_password=password_provider.hash_password("123")
     ))
     user2 = user_gateway.save_user(User(
@@ -24,8 +24,8 @@ def test_send_message_with_access(client, chat_gateway, user_gateway, message_ga
     response = client.post(
         r"/user/login",
         json={
-            "username": "username1383",
-            "password": "123"
+            "username": user1.username,
+            "password": "123",
         }
     )
 
@@ -48,7 +48,8 @@ def test_send_message_with_access(client, chat_gateway, user_gateway, message_ga
     assert response_json["author_id"] == user1.id
     assert response_json["owner_id"] == user1.id
 
-    chat = chat_gateway.get_chat_by_id(response_json["id"])
+    message = message_gateway.get_message_by_id(response_json["id"])
 
-    assert chat.title == response_json["title"]
-    assert chat.users_ids == response_json["users_ids"]
+    assert message.text == response_json["text"]
+    assert message.author_id == response_json["author_id"]
+    assert message.owner_id == response_json["owner_id"]

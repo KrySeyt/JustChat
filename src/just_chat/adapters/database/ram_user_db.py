@@ -13,11 +13,10 @@ class RAMUserGateway(UserGateway):
     next_user_id_lock = threading.Lock()
 
     def save_user(self, user: User) -> User:
-        user_in_db = User(
-            **asdict(user) | {"id": self.next_user_id}
-        )
-
         with self.next_user_id_lock:
+            user_in_db = User(
+                **asdict(user) | {"id": self.next_user_id}
+            )
             type(self).next_user_id += 1
 
         self.RAM_USERS_DB.append(user_in_db)

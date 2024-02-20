@@ -12,11 +12,10 @@ class RAMChatGateway(ChatGateway):
     next_chat_id_lock = threading.Lock()
 
     def save_chat(self, chat: Chat) -> Chat:
-        chat_in_db = Chat(
-            **asdict(chat) | {"id": self.next_chat_id}
-        )
-
         with self.next_chat_id_lock:
+            chat_in_db = Chat(
+                **asdict(chat) | {"id": self.next_chat_id}
+            )
             type(self).next_chat_id += 1
 
         self.RAM_CHATS_DB.append(chat_in_db)

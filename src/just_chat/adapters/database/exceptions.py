@@ -12,3 +12,7 @@ class UserNotFound(GatewayException):
 
 class SessionNotFound(GatewayException):
     pass
+
+
+class MessageNotFound(GatewayException):
+    pass

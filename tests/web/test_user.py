@@ -1,5 +1,6 @@
 import pytest
 
+from just_chat.application.common.session_gateway import SessionToken
 from just_chat.domain.models.user import User
 
 
@@ -37,10 +38,10 @@ def test_get_user_by_id(client, user_gateway):
     assert response_json["username"] == user.username
 
 
-def test_login(client, user_gateway, password_provider):
+def test_login(client, user_gateway, password_provider, session_gateway):
     user = user_gateway.save_user(User(
         id=None,
-        username="Username",
+        username="test_login",
         hashed_password=password_provider.hash_password("123")
     ))
 
@@ -51,5 +52,11 @@ def test_login(client, user_gateway, password_provider):
             "password": "123",
         }
     )
+
     assert response.status_code == 200
     assert "token" in response.cookies
+
+    session_token = response.cookies.get("token").strip('"')
+
+    session_user_id = session_gateway.get_user_id(SessionToken(session_token))
+    assert user.id == session_user_id

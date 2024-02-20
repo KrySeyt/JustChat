@@ -2,7 +2,7 @@ from typing import Annotated
 
 from fastapi import Depends, Body, Response, status, HTTPException
 
-from just_chat.adapters.database.exceptions import UserNotFound
+from just_chat.application.common.user_gateway import UserNotFound
 from just_chat.application.user.login import LoginDTO, WrongCredentials
 from .router import user_router
 from ...interactor_factory.user import UserInteractorFactory

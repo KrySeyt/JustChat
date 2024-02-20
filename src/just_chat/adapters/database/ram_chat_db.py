@@ -1,8 +1,7 @@
 import threading
 from dataclasses import asdict
 
-from just_chat.adapters.database.exceptions import ChatNotFound
-from just_chat.application.common.chat_gateway import ChatGateway
+from just_chat.application.common.chat_gateway import ChatGateway, ChatNotFound
 from just_chat.domain.models.chat import ChatId, Chat
 
 

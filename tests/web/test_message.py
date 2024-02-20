@@ -1,5 +1,3 @@
-import pytest
-
 from just_chat.domain.models.chat import Chat
 from just_chat.domain.models.user import User
 

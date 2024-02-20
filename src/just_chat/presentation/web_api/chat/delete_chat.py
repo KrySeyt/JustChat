@@ -3,7 +3,7 @@ from typing import Annotated
 from fastapi import Depends, Path, status
 from fastapi.exceptions import HTTPException
 
-from just_chat.adapters.database.exceptions import ChatNotFound
+from just_chat.application.common.chat_gateway import ChatNotFound
 from just_chat.domain.models.chat import ChatId, Chat
 from just_chat.presentation.web_api.chat.router import chat_router
 from just_chat.presentation.interactor_factory.chat import ChatInteractorFactory

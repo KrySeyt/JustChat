@@ -1,14 +1,9 @@
 from unittest.mock import Mock
 
 import pytest
-import passlib.hash
 
-from just_chat.adapters.database.exceptions import SessionNotFound
-from just_chat.adapters.database.ram_session_db import RAMSessionGateway
-from just_chat.adapters.database.ram_user_db import RAMUserGateway
-from just_chat.adapters.security.password_provider import HashingPasswordProvider
 from just_chat.application.common.password_provider import PasswordProvider
-from just_chat.application.common.session_gateway import SessionGateway
+from just_chat.application.common.session_gateway import SessionGateway, SessionNotFound
 from just_chat.application.common.user_gateway import UserGateway
 from just_chat.application.user.create_user import CreateUser, NewUserDTO
 from just_chat.application.user.get_user_by_id import GetUserById

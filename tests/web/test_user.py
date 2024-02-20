@@ -1,5 +1,3 @@
-import pytest
-
 from just_chat.application.common.session_gateway import SessionToken
 from just_chat.domain.models.user import User
 

@@ -2,8 +2,7 @@ import threading
 from dataclasses import asdict
 from typing import Container
 
-from just_chat.adapters.database.exceptions import UserNotFound
-from just_chat.application.common.user_gateway import UserGateway
+from just_chat.application.common.user_gateway import UserGateway, UserNotFound
 from just_chat.domain.models.user import UserId, User
 
 

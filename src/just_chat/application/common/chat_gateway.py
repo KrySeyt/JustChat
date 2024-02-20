@@ -3,6 +3,10 @@ from abc import ABC, abstractmethod
 from just_chat.domain.models.chat import Chat, ChatId
 
 
+class ChatNotFound(ValueError):
+    pass
+
+
 class ChatGateway(ABC):
     @abstractmethod
     def save_chat(self, chat: Chat) -> Chat:

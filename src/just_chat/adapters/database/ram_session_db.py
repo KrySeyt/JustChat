@@ -1,5 +1,4 @@
-from just_chat.adapters.database.exceptions import SessionNotFound
-from just_chat.application.common.session_gateway import SessionGateway, SessionToken
+from just_chat.application.common.session_gateway import SessionGateway, SessionToken, SessionNotFound
 from just_chat.domain.models.user import UserId
 
 

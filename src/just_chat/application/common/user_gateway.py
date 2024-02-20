@@ -4,6 +4,10 @@ from typing import Container
 from just_chat.domain.models.user import User, UserId
 
 
+class UserNotFound(ValueError):
+    pass
+
+
 class UserGateway(ABC):
     @abstractmethod
     def save_user(self, user: User) -> User:

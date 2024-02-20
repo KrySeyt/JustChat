@@ -3,7 +3,7 @@ from typing import Annotated
 from fastapi import Depends, HTTPException
 from starlette import status
 
-from just_chat.adapters.database.exceptions import UserNotFound
+from just_chat.application.common.user_gateway import UserNotFound
 from just_chat.application.user.get_user_by_id import UserDTO
 from just_chat.domain.models.user import UserId
 from .router import user_router

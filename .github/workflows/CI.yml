@@ -25,3 +25,7 @@ jobs:
     - name: Check types with mypy
       run: |
         mypy src
+
+    - name: Run tests
+      run: |
+        pytest

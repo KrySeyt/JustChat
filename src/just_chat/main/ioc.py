@@ -13,6 +13,7 @@ from just_chat.application.chat.delete_chat import DeleteChat
 from just_chat.application.chat.get_chat import GetChat
 from just_chat.application.common.id_provider import IdProvider
 from just_chat.application.message.create_message import CreateMessage
+from just_chat.application.message.get_chat_messages import GetChatMessages
 from just_chat.application.user.create_user import CreateUser
 from just_chat.application.user.get_user_by_id import GetUserById
 from just_chat.application.user.get_user_by_token import GetUserIdByToken
@@ -97,6 +98,15 @@ class MessageIoC(MessageInteractorFactory):
     @contextmanager
     def create_message(self, id_provider: IdProvider) -> Generator[CreateMessage, None, None]:
         yield CreateMessage(
+            ChatAccessService(),
+            self._message_gateway,
+            self._chat_gateway,
+            id_provider,
+        )
+
+    @contextmanager
+    def get_chat_messages(self, id_provider: IdProvider) -> Generator[GetChatMessages, None, None]:
+        yield GetChatMessages(
             ChatAccessService(),
             self._message_gateway,
             self._chat_gateway,

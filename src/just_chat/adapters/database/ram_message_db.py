@@ -2,6 +2,7 @@ import threading
 from dataclasses import asdict
 
 from just_chat.application.common.message_gateway import MessageGateway, MessageNotFound
+from just_chat.domain.models.chat import ChatId
 from just_chat.domain.models.message import Message, MessageId
 
 
@@ -27,3 +28,11 @@ class RAMMessageGateway(MessageGateway):
                 return message
 
         raise MessageNotFound(f"Message with id {id_} not found")
+
+    def get_chat_messages_by_chat_id(self, chat_id: ChatId) -> list[Message]:
+        messages = []
+        for message in self.RAM_MESSAGES_DB:
+            if message.chat_id == chat_id:
+                messages.append(message)
+
+        return messages

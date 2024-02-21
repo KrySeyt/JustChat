@@ -51,3 +51,47 @@ def test_send_message_with_access(client, chat_gateway, user_gateway, message_ga
     assert message.text == response_json["text"]
     assert message.author_id == response_json["author_id"]
     assert message.owner_id == response_json["owner_id"]
+
+
+def test_send_message_with_no_access(client, chat_gateway, user_gateway, message_gateway, password_provider):
+    user1 = user_gateway.save_user(User(
+        id=None,
+        username="send_message_with_no_access",
+        hashed_password=password_provider.hash_password("123")
+    ))
+    user2 = user_gateway.save_user(User(
+        id=None,
+        username="Username2",
+        hashed_password="123"
+    ))
+    user3 = user_gateway.save_user(User(
+        id=None,
+        username="Username3",
+        hashed_password="123"
+    ))
+    chat = chat_gateway.save_chat(Chat(
+        id=None,
+        title="Title",
+        users_ids=[user2.id, user3.id],
+    ))
+
+    response = client.post(
+        r"/user/login",
+        json={
+            "username": user1.username,
+            "password": "123",
+        }
+    )
+
+    assert response.status_code == 200
+    assert "token" in response.cookies
+
+    response = client.post(
+        r"/message",
+        json={
+            "chat_id": chat.id,
+            "text": "MessageText",
+        }
+    )
+
+    assert response.status_code == 403

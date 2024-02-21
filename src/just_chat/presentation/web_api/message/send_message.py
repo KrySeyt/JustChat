@@ -1,9 +1,10 @@
 from typing import Annotated
 
-from fastapi import Depends
+from fastapi import Depends, HTTPException
 
 from just_chat.application.common.id_provider import IdProvider
 from just_chat.application.message.create_message import NewMessageDTO
+from just_chat.domain.exceptions import AccessDenied
 from just_chat.domain.models.message import Message
 from .router import message_router
 from ..dependencies.stub import Stub
@@ -16,5 +17,9 @@ def send_message(
         id_provider: Annotated[IdProvider, Depends(Stub(IdProvider))],
         data: NewMessageDTO,
 ) -> Message:
-    with interactor_factory.create_message(id_provider) as create_message_interactor:
-        return create_message_interactor(data)
+    try:
+        with interactor_factory.create_message(id_provider) as create_message_interactor:
+            return create_message_interactor(data)
+    except AccessDenied:
+        raise HTTPException(status_code=403, detail="Access denied")
+

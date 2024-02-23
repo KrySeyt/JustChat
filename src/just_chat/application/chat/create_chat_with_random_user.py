@@ -26,9 +26,9 @@ class CreateChatWithRandomUser(Interactor[NewChatDTO, Chat]):
         self._user_gateway = user_gateway
         self._id_provider = id_provider
 
-    def __call__(self, data: NewChatDTO) -> Chat:
-        user_id = self._id_provider.get_current_user_id()
-        second_user = self._user_gateway.get_random_user(exclude={user_id})
+    async def __call__(self, data: NewChatDTO) -> Chat:
+        user_id = await self._id_provider.get_current_user_id()
+        second_user = await self._user_gateway.get_random_user(exclude={user_id})
 
         assert second_user.id is not None
 
@@ -37,7 +37,7 @@ class CreateChatWithRandomUser(Interactor[NewChatDTO, Chat]):
             users_ids=(user_id, second_user.id)
         )
 
-        chat = self._chat_gateway.save_chat(chat)
+        chat = await self._chat_gateway.save_chat(chat)
 
         assert chat.id is not None
 

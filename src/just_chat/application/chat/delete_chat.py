@@ -7,7 +7,7 @@ class DeleteChat(Interactor[ChatId, Chat]):
     def __init__(self, chat_gateway: ChatGateway):
         self._chat_gateway = chat_gateway
 
-    def __call__(self, chat_id: ChatId) -> Chat:
-        chat = self._chat_gateway.delete_chat_by_id(chat_id)
+    async def __call__(self, chat_id: ChatId) -> Chat:
+        chat = await self._chat_gateway.delete_chat_by_id(chat_id)
         assert chat.id is not None
         return chat

@@ -1,22 +1,25 @@
 from dataclasses import asdict
 
+import pytest
+
 from just_chat.domain.models.chat import Chat
 from just_chat.domain.models.message import Message
 from just_chat.domain.models.user import User
 
 
-def test_send_message_with_access(client, chat_gateway, user_gateway, message_gateway, password_provider):
-    user1 = user_gateway.save_user(User(
+@pytest.mark.asyncio
+async def test_send_message_with_access(client, chat_gateway, user_gateway, message_gateway, password_provider):
+    user1 = await user_gateway.save_user(User(
         id=None,
         username="send_message_with_access",
         hashed_password=password_provider.hash_password("123")
     ))
-    user2 = user_gateway.save_user(User(
+    user2 = await user_gateway.save_user(User(
         id=None,
         username="Username2",
         hashed_password="123"
     ))
-    chat = chat_gateway.save_chat(Chat(
+    chat = await chat_gateway.save_chat(Chat(
         id=None,
         title="Title",
         users_ids=[user1.id, user2.id],
@@ -49,20 +52,21 @@ def test_send_message_with_access(client, chat_gateway, user_gateway, message_ga
     assert response_json["author_id"] == user1.id
     assert response_json["owner_id"] == user1.id
 
-    message = message_gateway.get_message_by_id(response_json["id"])
+    message = await message_gateway.get_message_by_id(response_json["id"])
 
     assert message.text == response_json["text"]
     assert message.author_id == response_json["author_id"]
     assert message.owner_id == response_json["owner_id"]
 
 
-def test_send_message_with_no_access(client, chat_gateway, user_gateway, message_gateway, password_provider):
-    user = user_gateway.save_user(User(
+@pytest.mark.asyncio
+async def test_send_message_with_no_access(client, chat_gateway, user_gateway, message_gateway, password_provider):
+    user = await user_gateway.save_user(User(
         id=None,
         username="send_message_with_no_access",
         hashed_password=password_provider.hash_password("123")
     ))
-    chat = chat_gateway.save_chat(Chat(
+    chat = await chat_gateway.save_chat(Chat(
         id=None,
         title="Title",
         users_ids=[],
@@ -90,25 +94,26 @@ def test_send_message_with_no_access(client, chat_gateway, user_gateway, message
     assert response.status_code == 403
 
 
-def test_get_chat_messages_with_access(client, chat_gateway, user_gateway, message_gateway, password_provider):
-    user1 = user_gateway.save_user(User(
+@pytest.mark.asyncio
+async def test_get_chat_messages_with_access(client, chat_gateway, user_gateway, message_gateway, password_provider):
+    user1 = await user_gateway.save_user(User(
         id=None,
         username="get_chat_messages_with_access",
         hashed_password=password_provider.hash_password("123")
     ))
-    user2 = user_gateway.save_user(User(
+    user2 = await user_gateway.save_user(User(
         id=None,
         username="Username2",
         hashed_password="123"
     ))
-    chat = chat_gateway.save_chat(Chat(
+    chat = await chat_gateway.save_chat(Chat(
         id=None,
         title="Title",
         users_ids=[user1.id, user2.id],
     ))
     messages = []
     for text in ("Text1", "Text2", "Text3"):
-        message = message_gateway.save_message(Message(
+        message = await message_gateway.save_message(Message(
             id=None,
             chat_id=chat.id,
             text=text,
@@ -147,13 +152,14 @@ def test_get_chat_messages_with_access(client, chat_gateway, user_gateway, messa
     assert messages_ids == messages_ids
 
 
-def test_get_chat_messages_with_no_access(client, chat_gateway, user_gateway, message_gateway, password_provider):
-    user1 = user_gateway.save_user(User(
+@pytest.mark.asyncio
+async def test_get_chat_messages_with_no_access(client, chat_gateway, user_gateway, message_gateway, password_provider):
+    user1 = await user_gateway.save_user(User(
         id=None,
         username="get_chat_messages_with_no_access",
         hashed_password=password_provider.hash_password("123")
     ))
-    chat = chat_gateway.save_chat(Chat(
+    chat = await chat_gateway.save_chat(Chat(
         id=None,
         title="Title",
         users_ids=[],

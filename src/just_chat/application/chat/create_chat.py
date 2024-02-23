@@ -18,13 +18,13 @@ class CreateChat(Interactor[NewChatDTO, Chat]):
         self._chat_service = chat_service
         self._chat_gateway = chat_gateway
 
-    def __call__(self, data: NewChatDTO) -> Chat:
+    async def __call__(self, data: NewChatDTO) -> Chat:
         chat = self._chat_service.create_chat(
             title=data.title,
             users_ids=data.user_ids,
         )
 
-        chat = self._chat_gateway.save_chat(chat)
+        chat = await self._chat_gateway.save_chat(chat)
 
         assert chat.id is not None
 

@@ -7,6 +7,6 @@ class GetUserIdByToken(Interactor[SessionToken, UserId]):
     def __init__(self, session_gateway: SessionGateway) -> None:
         self._session_gateway = session_gateway
 
-    def __call__(self, data: SessionToken) -> UserId:
-        user_id = self._session_gateway.get_user_id(token=data)
+    async def __call__(self, data: SessionToken) -> UserId:
+        user_id = await self._session_gateway.get_user_id(token=data)
         return user_id

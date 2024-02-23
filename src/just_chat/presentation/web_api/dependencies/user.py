@@ -5,7 +5,7 @@ from fastapi import Body, Depends
 from just_chat.application.common.password_provider import PasswordProvider
 
 
-def get_hashed_password(
+async def get_hashed_password(
         password: Annotated[str, Body(embed=True)],
         password_provider: Annotated[PasswordProvider, Depends()]
 ) -> str:

@@ -12,6 +12,7 @@ from just_chat.presentation.interactor_factory.message import MessageInteractorF
 from just_chat.presentation.interactor_factory.user import UserInteractorFactory
 from just_chat.presentation.web_api.chat import chat_router
 from just_chat.presentation.web_api.dependencies.id_provider import get_session_id_provider
+from just_chat.presentation.web_api.event import event_router
 from just_chat.presentation.web_api.message import message_router
 from just_chat.presentation.web_api.user import user_router
 
@@ -32,6 +33,7 @@ def create_app() -> FastAPI:
     app.include_router(chat_router)
     app.include_router(user_router)
     app.include_router(message_router)
+    app.include_router(event_router)
 
     app.dependency_overrides[ChatInteractorFactory] = singleton(chat_ioc)
     app.dependency_overrides[UserInteractorFactory] = singleton(user_ioc)

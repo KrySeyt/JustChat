@@ -13,9 +13,9 @@ class SessionNotFound(ValueError):
 
 class SessionGateway(ABC):
     @abstractmethod
-    def get_user_id(self, token: SessionToken) -> UserId:
+    async def get_user_id(self, token: SessionToken) -> UserId:
         raise NotImplementedError
 
     @abstractmethod
-    def save_session_token(self, user_id: UserId, token: SessionToken) -> None:
+    async def save_session_token(self, user_id: UserId, token: SessionToken) -> None:
         raise NotImplementedError

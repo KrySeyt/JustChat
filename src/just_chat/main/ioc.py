@@ -6,6 +6,7 @@ from passlib.handlers.argon2 import argon2
 from just_chat.adapters.database.ram_message_db import RAMMessageGateway
 from just_chat.adapters.database.ram_session_db import RAMSessionGateway
 from just_chat.adapters.database.ram_user_db import RAMUserGateway
+from just_chat.adapters.events.websocket_event_gateway import WSEventGateway
 from just_chat.adapters.security.password_provider import HashingPasswordProvider
 from just_chat.application.chat.create_chat import CreateChat
 from just_chat.application.chat.create_chat_with_random_user import CreateChatWithRandomUser
@@ -20,6 +21,7 @@ from just_chat.application.user.get_user_by_token import GetUserIdByToken
 from just_chat.application.user.login import Login
 from just_chat.domain.services.chat import ChatService
 from just_chat.domain.services.chat_access import ChatAccessService
+from just_chat.domain.services.event import EventService
 from just_chat.domain.services.user import UserService
 from just_chat.presentation.interactor_factory.chat import ChatInteractorFactory
 from just_chat.adapters.database.ram_chat_db import RAMChatGateway
@@ -94,13 +96,16 @@ class MessageIoC(MessageInteractorFactory):
     def __init__(self) -> None:
         self._chat_gateway = RAMChatGateway()
         self._message_gateway = RAMMessageGateway()
+        self._event_gateway = WSEventGateway()
 
     @contextmanager
     def create_message(self, id_provider: IdProvider) -> Generator[CreateMessage, None, None]:
         yield CreateMessage(
             ChatAccessService(),
-            self._message_gateway,
             self._chat_gateway,
+            EventService(),
+            self._event_gateway,
+            self._message_gateway,
             id_provider,
         )
 

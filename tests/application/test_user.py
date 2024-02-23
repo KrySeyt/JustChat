@@ -1,4 +1,4 @@
-from unittest.mock import Mock
+from unittest.mock import Mock, AsyncMock
 
 import pytest
 
@@ -18,18 +18,18 @@ PASSWORD = "123"
 
 @pytest.fixture()
 def user_gateway(password_provider) -> UserGateway:
-    gateway = Mock()
-    gateway.save_user = Mock(return_value=User(
+    gateway = AsyncMock()
+    gateway.save_user = AsyncMock(return_value=User(
         id=USER_ID,
         username=USERNAME,
         hashed_password=password_provider.hash_password(PASSWORD),
     ))
-    gateway.get_user_by_id = Mock(return_value=User(
+    gateway.get_user_by_id = AsyncMock(return_value=User(
         id=USER_ID,
         username=USERNAME,
         hashed_password=password_provider.hash_password(PASSWORD),
     ))
-    gateway.get_user_by_username = Mock(return_value=User(
+    gateway.get_user_by_username = AsyncMock(return_value=User(
         id=USER_ID,
         username=USERNAME,
         hashed_password=password_provider.hash_password(PASSWORD),
@@ -39,15 +39,15 @@ def user_gateway(password_provider) -> UserGateway:
 
 @pytest.fixture()
 def session_gateway() -> SessionGateway:
-    gateway = Mock()
+    gateway = AsyncMock()
     gateway.user_ids = dict()
 
-    def save(user_id: UserId, token: str):
+    async def save(user_id: UserId, token: str):
         gateway.user_ids[token] = user_id
 
     gateway.save_session_token = save
 
-    def get(token: str):
+    async def get(token: str):
         if token in gateway.user_ids:
             return gateway.user_ids[token]
         raise SessionNotFound
@@ -63,13 +63,14 @@ def password_provider() -> PasswordProvider:
     return provider
 
 
-def test_create_user(user_gateway, password_provider):
+@pytest.mark.asyncio
+async def test_create_user(user_gateway, password_provider):
     interactor = CreateUser(
         user_service=UserService(),
         user_gateway=user_gateway,
     )
 
-    user = interactor(NewUserDTO(
+    user = await interactor(NewUserDTO(
         username=USERNAME,
         hashed_password=password_provider.hash_password(PASSWORD),
     ))
@@ -77,19 +78,21 @@ def test_create_user(user_gateway, password_provider):
     assert user.username == USERNAME
 
 
-def test_get_user(user_gateway):
+@pytest.mark.asyncio
+async def test_get_user(user_gateway):
     interactor = GetUserById(
         user_service=UserService(),
         user_gateway=user_gateway,
     )
 
-    user = interactor(data=USER_ID)
+    user = await interactor(data=USER_ID)
 
     assert user.id == USER_ID
     assert user.username == USERNAME
 
 
-def test_login(user_gateway, session_gateway, password_provider):
+@pytest.mark.asyncio
+async def test_login(user_gateway, session_gateway, password_provider):
     interactor = Login(
         user_service=UserService(),
         user_gateway=user_gateway,
@@ -97,9 +100,9 @@ def test_login(user_gateway, session_gateway, password_provider):
         session_gateway=session_gateway,
     )
 
-    token = interactor(LoginDTO(
+    token = await interactor(LoginDTO(
         username=USERNAME,
         password=PASSWORD,
     ))
 
-    assert session_gateway.get_user_id(token) == USER_ID
+    assert await session_gateway.get_user_id(token) == USER_ID

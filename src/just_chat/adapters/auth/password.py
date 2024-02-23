@@ -9,5 +9,5 @@ class SessionIdProvider(IdProvider):
         self._token = token
         self._user_id_provider = user_id_provider
 
-    def get_current_user_id(self) -> UserId:
-        return self._user_id_provider(self._token)
+    async def get_current_user_id(self) -> UserId:
+        return await self._user_id_provider(self._token)

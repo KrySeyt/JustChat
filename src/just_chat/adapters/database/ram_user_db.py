@@ -11,7 +11,7 @@ class RAMUserGateway(UserGateway):
     next_user_id = 0
     next_user_id_lock = threading.Lock()
 
-    def save_user(self, user: User) -> User:
+    async def save_user(self, user: User) -> User:
         with self.next_user_id_lock:
             user_in_db = User(
                 **asdict(user) | {"id": self.next_user_id}
@@ -22,28 +22,28 @@ class RAMUserGateway(UserGateway):
 
         return user_in_db
 
-    def get_user_by_id(self, id_: UserId) -> User:
+    async def get_user_by_id(self, id_: UserId) -> User:
         for user in self.RAM_USERS_DB:
             if user.id == id_:
                 return user
 
         raise UserNotFound(f"User with id {id_} not found")
 
-    def get_user_by_username(self, username: str) -> User:
+    async def get_user_by_username(self, username: str) -> User:
         for user in self.RAM_USERS_DB:
             if user.username == username:
                 return user
 
         raise UserNotFound(f"User with username {username} not found")
 
-    def get_random_user(self, exclude: Container[UserId]) -> User:
+    async def get_random_user(self, exclude: Container[UserId]) -> User:
         for user in self.RAM_USERS_DB:
             if user.id not in exclude:
                 return user
 
         raise UserNotFound("User not found")
 
-    def delete_user_by_id(self, id_: UserId) -> User:
-        user = self.get_user_by_id(id_)
+    async def delete_user_by_id(self, id_: UserId) -> User:
+        user = await self.get_user_by_id(id_)
         self.RAM_USERS_DB.remove(user)
         return user

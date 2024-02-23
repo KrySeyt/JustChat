@@ -7,5 +7,5 @@ OutputDTO = TypeVar("OutputDTO")
 
 class Interactor(ABC, Generic[InputDTO, OutputDTO]):
     @abstractmethod
-    def __call__(self, data: InputDTO) -> OutputDTO:
+    async def __call__(self, data: InputDTO) -> OutputDTO:
         raise NotImplementedError

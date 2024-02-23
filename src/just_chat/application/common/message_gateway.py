@@ -10,14 +10,14 @@ class MessageNotFound(ValueError):
 
 class MessageGateway(ABC):
     @abstractmethod
-    def save_message(self, message: Message) -> Message:
+    async def save_message(self, message: Message) -> Message:
         raise NotImplementedError
 
     @abstractmethod
-    def get_message_by_id(self, id_: MessageId) -> Message:
+    async def get_message_by_id(self, id_: MessageId) -> Message:
         raise NotImplementedError
 
     @abstractmethod
-    def get_chat_messages_by_chat_id(self, chat_id: ChatId) -> list[Message]:
+    async def get_chat_messages_by_chat_id(self, chat_id: ChatId) -> list[Message]:
         raise NotImplementedError
 

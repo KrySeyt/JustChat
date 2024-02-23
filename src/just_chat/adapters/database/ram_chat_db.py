@@ -10,7 +10,7 @@ class RAMChatGateway(ChatGateway):
     next_chat_id = 0
     next_chat_id_lock = threading.Lock()
 
-    def save_chat(self, chat: Chat) -> Chat:
+    async def save_chat(self, chat: Chat) -> Chat:
         with self.next_chat_id_lock:
             chat_in_db = Chat(
                 **asdict(chat) | {"id": self.next_chat_id}
@@ -21,14 +21,14 @@ class RAMChatGateway(ChatGateway):
 
         return chat_in_db
 
-    def get_chat_by_id(self, id_: ChatId) -> Chat:
+    async def get_chat_by_id(self, id_: ChatId) -> Chat:
         for chat in self.RAM_CHATS_DB:
             if chat.id == id_:
                 return chat
 
         raise ChatNotFound(f"Chat with id {id_} not found")
 
-    def delete_chat_by_id(self, id_: ChatId) -> Chat:
-        chat = self.get_chat_by_id(id_)
+    async def delete_chat_by_id(self, id_: ChatId) -> Chat:
+        chat = await self.get_chat_by_id(id_)
         self.RAM_CHATS_DB.remove(chat)
         return chat

@@ -11,12 +11,12 @@ from ...interactor_factory.user import UserInteractorFactory
 
 
 @user_router.get(r"/{user_id}")
-def get_user_by_id(
+async def get_user_by_id(
         interactor_factory: Annotated[UserInteractorFactory, Depends()],
         user_id: int,
 ) -> UserDTO:
     with interactor_factory.get_user() as get_user_interactor:
         try:
-            return get_user_interactor(UserId(user_id))
+            return await get_user_interactor(UserId(user_id))
         except UserNotFound:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)

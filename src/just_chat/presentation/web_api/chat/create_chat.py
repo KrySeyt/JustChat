@@ -9,9 +9,9 @@ from ...interactor_factory.chat import ChatInteractorFactory
 
 
 @chat_router.post("/")
-def create_chat(
+async def create_chat(
         interactor_factory: Annotated[ChatInteractorFactory, Depends()],
         data: NewChatDTO,
 ) -> Chat:
     with interactor_factory.create_chat() as create_chat_interactor:
-        return create_chat_interactor(data)
+        return await create_chat_interactor(data)

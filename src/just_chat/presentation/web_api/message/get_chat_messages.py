@@ -12,14 +12,14 @@ from ...interactor_factory.message import MessageInteractorFactory
 
 
 @message_router.get("/chat/{chat_id}")
-def get_chat_messages(
+async def get_chat_messages(
         interactor_factory: Annotated[MessageInteractorFactory, Depends()],
         id_provider: Annotated[IdProvider, Depends(Stub(IdProvider))],
         chat_id: Annotated[ChatId, Path()],
 ) -> list[Message]:
     try:
         with interactor_factory.get_chat_messages(id_provider) as get_chat_messages_interactor:
-            return get_chat_messages_interactor(chat_id)
+            return await get_chat_messages_interactor(chat_id)
     except AccessDenied:
         raise HTTPException(status_code=403, detail="Access denied")
 

@@ -9,7 +9,7 @@ from ...interactor_factory.user import UserInteractorFactory
 
 
 @user_router.post("/login")
-def login(
+async def login(
         interactor_factory: Annotated[UserInteractorFactory, Depends()],
         response: Response,
         username: Annotated[str, Body(embed=True)],
@@ -17,7 +17,7 @@ def login(
 ) -> None:
     try:
         with interactor_factory.login() as login_interactor:
-            token = login_interactor(LoginDTO(
+            token = await login_interactor(LoginDTO(
                 username=username,
                 password=password,
             ))

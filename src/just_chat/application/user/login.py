@@ -31,8 +31,8 @@ class Login(Interactor[LoginDTO, SessionToken]):
         self._session_gateway = session_gateway
         self._password_provider = password_provider
 
-    def __call__(self, data: LoginDTO) -> SessionToken:
-        user = self._user_gateway.get_user_by_username(data.username)
+    async def __call__(self, data: LoginDTO) -> SessionToken:
+        user = await self._user_gateway.get_user_by_username(data.username)
         assert user.id is not None
 
         if not self._password_provider.verify_password(data.password, user.hashed_password):
@@ -40,6 +40,6 @@ class Login(Interactor[LoginDTO, SessionToken]):
 
         token = uuid.uuid4()
 
-        self._session_gateway.save_session_token(user.id, SessionToken(str(token)))
+        await self._session_gateway.save_session_token(user.id, SessionToken(str(token)))
 
         return SessionToken(str(token))

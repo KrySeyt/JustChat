@@ -12,14 +12,14 @@ from ...interactor_factory.message import MessageInteractorFactory
 
 
 @message_router.post("")
-def send_message(
+async def send_message(
         interactor_factory: Annotated[MessageInteractorFactory, Depends()],
         id_provider: Annotated[IdProvider, Depends(Stub(IdProvider))],
         data: NewMessageDTO,
 ) -> Message:
     try:
         with interactor_factory.create_message(id_provider) as create_message_interactor:
-            return create_message_interactor(data)
+            return await create_message_interactor(data)
     except AccessDenied:
         raise HTTPException(status_code=403, detail="Access denied")
 

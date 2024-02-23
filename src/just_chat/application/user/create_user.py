@@ -23,13 +23,13 @@ class CreateUser(Interactor[NewUserDTO, CreatedUserDTO]):
         self._user_service = user_service
         self._user_gateway = user_gateway
 
-    def __call__(self, data: NewUserDTO) -> CreatedUserDTO:
+    async def __call__(self, data: NewUserDTO) -> CreatedUserDTO:
         user = self._user_service.create_user(
             username=data.username,
             hashed_password=data.hashed_password,
         )
 
-        user = self._user_gateway.save_user(user)
+        user = await self._user_gateway.save_user(user)
 
         assert user.id is not None
 

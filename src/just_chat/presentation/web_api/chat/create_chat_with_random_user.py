@@ -11,10 +11,10 @@ from ...interactor_factory.chat import ChatInteractorFactory
 
 
 @chat_router.post("/random")
-def create_chat_with_random_user(
+async def create_chat_with_random_user(
         interactor_factory: Annotated[ChatInteractorFactory, Depends()],
         id_provider: Annotated[IdProvider, Depends(Stub(IdProvider))],
         data: NewChatDTO,
 ) -> Chat:
     with interactor_factory.create_chat_with_random_user(id_provider) as create_chat_interactor:
-        return create_chat_interactor(data)
+        return await create_chat_interactor(data)

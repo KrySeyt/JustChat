@@ -33,11 +33,13 @@ dependencies = [
     "types-passlib",
     "uvicorn",
     "gunicorn",
+    "websockets",
 ]
 
 [project.optional-dependencies]
 test = [
     "pytest",
+    "pytest-asyncio",
     "pytest-cov",
     "httpx"
 ]

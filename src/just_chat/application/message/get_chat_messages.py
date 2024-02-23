@@ -21,13 +21,13 @@ class GetChatMessages(Interactor[ChatId, list[Message]]):
         self._chat_gateway = chat_gateway
         self._id_provider = id_provider
 
-    def __call__(self, chat_id: ChatId) -> list[Message]:
-        chat = self._chat_gateway.get_chat_by_id(chat_id)
-        user_id = self._id_provider.get_current_user_id()
+    async def __call__(self, chat_id: ChatId) -> list[Message]:
+        chat = await self._chat_gateway.get_chat_by_id(chat_id)
+        user_id = await self._id_provider.get_current_user_id()
 
         self._chat_access_service.ensure_user_can_write_to_chat(chat, user_id)
 
-        messages = self._message_gateway.get_chat_messages_by_chat_id(chat_id)
+        messages = await self._message_gateway.get_chat_messages_by_chat_id(chat_id)
 
         assert all(message.id for message in messages)
 

@@ -17,8 +17,8 @@ class GetUserById(Interactor[UserId, UserDTO]):
         self._user_service = user_service
         self._user_gateway = user_gateway
 
-    def __call__(self, data: UserId) -> UserDTO:
-        user = self._user_gateway.get_user_by_id(data)
+    async def __call__(self, data: UserId) -> UserDTO:
+        user = await self._user_gateway.get_user_by_id(data)
 
         assert user.id is not None
 

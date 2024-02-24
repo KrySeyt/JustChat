@@ -1,8 +1,9 @@
-from contextlib import contextmanager
-from typing import Generator
+from contextlib import asynccontextmanager
+from typing import AsyncGenerator
 
 from passlib.handlers.argon2 import argon2
 
+from just_chat.adapters.database.ram_chat_db import RAMChatGateway
 from just_chat.adapters.database.ram_message_db import RAMMessageGateway
 from just_chat.adapters.database.ram_session_db import RAMSessionGateway
 from just_chat.adapters.database.ram_user_db import RAMUserGateway
@@ -24,7 +25,6 @@ from just_chat.domain.services.chat_access import ChatAccessService
 from just_chat.domain.services.event import EventService
 from just_chat.domain.services.user import UserService
 from just_chat.presentation.interactor_factory.chat import ChatInteractorFactory
-from just_chat.adapters.database.ram_chat_db import RAMChatGateway
 from just_chat.presentation.interactor_factory.message import MessageInteractorFactory
 from just_chat.presentation.interactor_factory.user import UserInteractorFactory
 
@@ -34,16 +34,19 @@ class ChatIoC(ChatInteractorFactory):
         self._chat_gateway = RAMChatGateway()
         self._user_gateway = RAMUserGateway()
 
-    @contextmanager
-    def get_chat(self) -> Generator[GetChat, None, None]:
+    @asynccontextmanager
+    async def get_chat(self) -> AsyncGenerator[GetChat, None]:
         yield GetChat(self._chat_gateway)
 
-    @contextmanager
-    def create_chat(self) -> Generator[CreateChat, None, None]:
+    @asynccontextmanager
+    async def create_chat(self) -> AsyncGenerator[CreateChat, None]:
         yield CreateChat(ChatService(), self._chat_gateway)
 
-    @contextmanager
-    def create_chat_with_random_user(self, id_provider: IdProvider) -> Generator[CreateChatWithRandomUser, None, None]:
+    @asynccontextmanager
+    async def create_chat_with_random_user(
+            self,
+            id_provider: IdProvider
+    ) -> AsyncGenerator[CreateChatWithRandomUser, None]:
         yield CreateChatWithRandomUser(
             ChatService(),
             self._chat_gateway,
@@ -51,8 +54,8 @@ class ChatIoC(ChatInteractorFactory):
             id_provider,
         )
 
-    @contextmanager
-    def delete_chat(self) -> Generator[DeleteChat, None, None]:
+    @asynccontextmanager
+    async def delete_chat(self) -> AsyncGenerator[DeleteChat, None]:
         yield DeleteChat(self._chat_gateway)
 
 
@@ -62,28 +65,28 @@ class UserIoC(UserInteractorFactory):
         self._session_gateway = RAMSessionGateway()
         self._password_provider = HashingPasswordProvider(argon2)
 
-    @contextmanager
-    def get_user(self) -> Generator[GetUserById, None, None]:
+    @asynccontextmanager
+    async def get_user(self) -> AsyncGenerator[GetUserById, None]:
         yield GetUserById(
             UserService(),
             self._user_gateway
         )
 
-    @contextmanager
-    def get_user_id_by_token(self) -> Generator[GetUserIdByToken, None, None]:
+    @asynccontextmanager
+    async def get_user_id_by_token(self) -> AsyncGenerator[GetUserIdByToken, None]:
         yield GetUserIdByToken(
             self._session_gateway,
         )
 
-    @contextmanager
-    def create_user(self) -> Generator[CreateUser, None, None]:
+    @asynccontextmanager
+    async def create_user(self) -> AsyncGenerator[CreateUser, None]:
         yield CreateUser(
             UserService(),
             self._user_gateway
         )
 
-    @contextmanager
-    def login(self) -> Generator[Login, None, None]:
+    @asynccontextmanager
+    async def login(self) -> AsyncGenerator[Login, None]:
         yield Login(
             UserService(),
             self._user_gateway,
@@ -98,8 +101,8 @@ class MessageIoC(MessageInteractorFactory):
         self._message_gateway = RAMMessageGateway()
         self._event_gateway = WSEventGateway()
 
-    @contextmanager
-    def create_message(self, id_provider: IdProvider) -> Generator[CreateMessage, None, None]:
+    @asynccontextmanager
+    async def create_message(self, id_provider: IdProvider) -> AsyncGenerator[CreateMessage, None]:
         yield CreateMessage(
             ChatAccessService(),
             self._chat_gateway,
@@ -109,8 +112,8 @@ class MessageIoC(MessageInteractorFactory):
             id_provider,
         )
 
-    @contextmanager
-    def get_chat_messages(self, id_provider: IdProvider) -> Generator[GetChatMessages, None, None]:
+    @asynccontextmanager
+    async def get_chat_messages(self, id_provider: IdProvider) -> AsyncGenerator[GetChatMessages, None]:
         yield GetChatMessages(
             ChatAccessService(),
             self._message_gateway,

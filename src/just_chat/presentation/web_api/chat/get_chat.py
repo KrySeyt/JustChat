@@ -14,7 +14,7 @@ async def get_chat(
         interactor_factory: Annotated[ChatInteractorFactory, Depends()],
         chat_id: Annotated[int, Path()],
 ) -> Chat:
-    with interactor_factory.get_chat() as get_chat_interactor:
+    async with interactor_factory.get_chat() as get_chat_interactor:
         try:
             return await get_chat_interactor(ChatId(chat_id))
         except ChatNotFound:

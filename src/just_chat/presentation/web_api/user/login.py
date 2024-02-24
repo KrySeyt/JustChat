@@ -16,7 +16,7 @@ async def login(
         password: Annotated[str, Body(embed=True)],
 ) -> None:
     try:
-        with interactor_factory.login() as login_interactor:
+        async with interactor_factory.login() as login_interactor:
             token = await login_interactor(LoginDTO(
                 username=username,
                 password=password,

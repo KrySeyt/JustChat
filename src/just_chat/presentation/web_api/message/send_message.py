@@ -18,7 +18,7 @@ async def send_message(
         data: NewMessageDTO,
 ) -> Message:
     try:
-        with interactor_factory.create_message(id_provider) as create_message_interactor:
+        async with interactor_factory.create_message(id_provider) as create_message_interactor:
             return await create_message_interactor(data)
     except AccessDenied:
         raise HTTPException(status_code=403, detail="Access denied")

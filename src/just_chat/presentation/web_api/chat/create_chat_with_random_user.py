@@ -16,5 +16,5 @@ async def create_chat_with_random_user(
         id_provider: Annotated[IdProvider, Depends(Stub(IdProvider))],
         data: NewChatDTO,
 ) -> Chat:
-    with interactor_factory.create_chat_with_random_user(id_provider) as create_chat_interactor:
+    async with interactor_factory.create_chat_with_random_user(id_provider) as create_chat_interactor:
         return await create_chat_interactor(data)

@@ -15,7 +15,7 @@ async def get_user_by_id(
         interactor_factory: Annotated[UserInteractorFactory, Depends()],
         user_id: int,
 ) -> UserDTO:
-    with interactor_factory.get_user() as get_user_interactor:
+    async with interactor_factory.get_user() as get_user_interactor:
         try:
             return await get_user_interactor(UserId(user_id))
         except UserNotFound:

@@ -13,5 +13,5 @@ async def create_chat(
         interactor_factory: Annotated[ChatInteractorFactory, Depends()],
         data: NewChatDTO,
 ) -> Chat:
-    with interactor_factory.create_chat() as create_chat_interactor:
+    async with interactor_factory.create_chat() as create_chat_interactor:
         return await create_chat_interactor(data)

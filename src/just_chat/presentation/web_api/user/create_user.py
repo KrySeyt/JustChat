@@ -14,7 +14,7 @@ async def create_user(
         username: Annotated[str, Body(embed=True)],
         hashed_password: Annotated[str, Depends(get_hashed_password)],
 ) -> CreatedUserDTO:
-    with interactor_factory.create_user() as create_user_interactor:
+    async with interactor_factory.create_user() as create_user_interactor:
         return await create_user_interactor(NewUserDTO(
             username=username,
             hashed_password=hashed_password,

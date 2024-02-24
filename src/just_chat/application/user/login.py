@@ -4,7 +4,7 @@ from dataclasses import dataclass
 from just_chat.application.common.interactor import Interactor
 from just_chat.application.common.password_provider import PasswordProvider
 from just_chat.application.common.session_gateway import SessionGateway, SessionToken
-from just_chat.application.common.user_gateway import UserGateway
+from just_chat.application.common.user_gateway import UserGateway, UserNotFound
 from just_chat.domain.services.user import UserService
 
 
@@ -32,7 +32,11 @@ class Login(Interactor[LoginDTO, SessionToken]):
         self._password_provider = password_provider
 
     async def __call__(self, data: LoginDTO) -> SessionToken:
-        user = await self._user_gateway.get_user_by_username(data.username)
+        try:
+            user = await self._user_gateway.get_user_by_username(data.username)
+        except UserNotFound:
+            raise WrongCredentials
+
         assert user.id is not None
 
         if not self._password_provider.verify_password(data.password, user.hashed_password):

@@ -18,7 +18,7 @@ async def get_chat_messages(
         chat_id: Annotated[ChatId, Path()],
 ) -> list[Message]:
     try:
-        with interactor_factory.get_chat_messages(id_provider) as get_chat_messages_interactor:
+        async with interactor_factory.get_chat_messages(id_provider) as get_chat_messages_interactor:
             return await get_chat_messages_interactor(chat_id)
     except AccessDenied:
         raise HTTPException(status_code=403, detail="Access denied")

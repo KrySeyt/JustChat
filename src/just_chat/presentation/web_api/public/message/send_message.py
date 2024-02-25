@@ -7,8 +7,8 @@ from just_chat.application.message.create_message import NewMessageDTO
 from just_chat.domain.exceptions import AccessDenied
 from just_chat.domain.models.message import Message
 from .router import message_router
-from ..dependencies.stub import Stub
-from ...interactor_factory.message import MessageInteractorFactory
+from just_chat.presentation.web_api.dependencies.stub import Stub
+from just_chat.presentation.interactor_factory.message import MessageInteractorFactory
 
 
 @message_router.post("")

@@ -4,8 +4,8 @@ from fastapi import Depends, Body
 
 from just_chat.application.user.create_user import NewUserDTO, CreatedUserDTO
 from .router import user_router
-from ..dependencies.user import get_hashed_password
-from ...interactor_factory.user import UserInteractorFactory
+from just_chat.presentation.web_api.dependencies.user import get_hashed_password
+from just_chat.presentation.interactor_factory.user import UserInteractorFactory
 
 
 @user_router.post(r"/")

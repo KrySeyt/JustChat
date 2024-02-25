@@ -32,7 +32,7 @@ async def test_get_user_by_id(client, user_gateway):
         hashed_password="123"
     ))
 
-    response = client.get(rf"/user/{user.id}")
+    response = client.get(rf"/admin/user/{user.id}")
     assert response.status_code == 200
     response_json = response.json()
 

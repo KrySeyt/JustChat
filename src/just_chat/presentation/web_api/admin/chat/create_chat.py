@@ -4,8 +4,8 @@ from fastapi import Depends
 
 from just_chat.application.chat.create_chat import NewChatDTO
 from just_chat.domain.models.chat import Chat
-from .router import chat_router
-from ...interactor_factory.chat import ChatInteractorFactory
+from just_chat.presentation.web_api.admin.chat.router import chat_router
+from just_chat.presentation.interactor_factory.chat import ChatInteractorFactory
 
 
 @chat_router.post("/")

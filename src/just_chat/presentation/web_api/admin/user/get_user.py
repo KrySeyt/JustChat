@@ -6,8 +6,8 @@ from starlette import status
 from just_chat.application.common.user_gateway import UserNotFound
 from just_chat.application.user.get_user_by_id import UserDTO
 from just_chat.domain.models.user import UserId
-from .router import user_router
-from ...interactor_factory.user import UserInteractorFactory
+from just_chat.presentation.interactor_factory.user import UserInteractorFactory
+from just_chat.presentation.web_api.admin.user.router import user_router
 
 
 @user_router.get(r"/{user_id}")

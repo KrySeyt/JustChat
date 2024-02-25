@@ -18,7 +18,7 @@ async def test_create_chat(client, chat_gateway, user_gateway):
     ))
 
     response = client.post(
-        r"/chat",
+        r"/admin/chat",
         json={
             "title": "Title",
             "user_ids": [user1.id, user2.id],
@@ -105,7 +105,7 @@ async def test_get_chat_by_id(client, chat_gateway, user_gateway):
         users_ids=[user1.id, user2.id],
     ))
 
-    response = client.get(rf"/chat/{chat.id}")
+    response = client.get(rf"/admin/chat/{chat.id}")
 
     assert response.status_code == 200
 
@@ -134,7 +134,7 @@ async def test_delete_chat_by_id(client, chat_gateway, user_gateway):
         users_ids=[user1.id, user2.id],
     ))
 
-    response = client.delete(rf"/chat/{chat.id}")
+    response = client.delete(rf"/admin/chat/{chat.id}")
     assert response.status_code == 200
     response_json = response.json()
 

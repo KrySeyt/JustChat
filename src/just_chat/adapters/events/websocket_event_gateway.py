@@ -22,7 +22,7 @@ class WSEventGateway(EventGateway):
                 await bus.send_json({
                     "event": "new_message",
                     "message": asdict(event.message),
-                })  
+                })
 
     async def add_user_event_bus(self, event_bus: EventBus, user_id: UserId) -> None:
         EVENT_BUS_DB[user_id] = event_bus

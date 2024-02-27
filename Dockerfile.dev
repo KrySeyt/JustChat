@@ -1,0 +1,21 @@
+FROM python:3.11.8-slim-bullseye
+
+RUN apt-get update && \
+    apt-get clean
+
+ENV WORKDIR=/just_chat
+
+WORKDIR $WORKDIR
+
+ENV VIRTUAL_ENV="$WORKDIR/venv"
+ENV PATH="$VIRTUAL_ENV/bin:$PATH"
+
+RUN python -m venv $VIRTUAL_ENV
+
+COPY pyproject.toml pyproject.toml
+COPY src/ src/
+
+RUN pip install --upgrade pip
+RUN pip install -e .\[dev] --no-cache-dir
+
+CMD gunicorn -k uvicorn.workers.UvicornWorker just_chat.main.web:create_app -b 0.0.0.0:8000

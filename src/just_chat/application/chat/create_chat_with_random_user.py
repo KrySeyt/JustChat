@@ -31,7 +31,7 @@ class CreateChatWithRandomUser(Interactor[NewChatDTO, Chat]):
 
         chat = await self._chat_gateway.create_chat_with_random_user(
             title=data.title,
-            user_id=user_id
+            user_id=user_id,
         )
 
         assert chat.id is not None

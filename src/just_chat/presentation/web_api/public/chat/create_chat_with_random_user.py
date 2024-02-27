@@ -5,9 +5,9 @@ from fastapi import Depends
 from just_chat.application.chat.create_chat_with_random_user import NewChatDTO
 from just_chat.application.common.id_provider import IdProvider
 from just_chat.domain.models.chat import Chat
-from .router import chat_router
-from just_chat.presentation.web_api.dependencies.stub import Stub
 from just_chat.presentation.interactor_factory.chat import ChatInteractorFactory
+from just_chat.presentation.web_api.dependencies.stub import Stub
+from .router import chat_router
 
 
 @chat_router.post("/random")

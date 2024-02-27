@@ -1,6 +1,6 @@
-from ..models.message import Message
-from ..models.user import UserId
-from ..models.chat import ChatId
+from just_chat.domain.models.chat import ChatId
+from just_chat.domain.models.message import Message
+from just_chat.domain.models.user import UserId
 
 
 class MessageService:

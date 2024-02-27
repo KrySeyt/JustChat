@@ -3,7 +3,7 @@ from typing import Annotated
 from fastapi import Depends, HTTPException
 from starlette import status
 
-from just_chat.application.common.user_gateway import UserNotFound
+from just_chat.application.common.user_gateway import UserNotFoundError
 from just_chat.application.user.get_user_by_id import UserDTO
 from just_chat.domain.models.user import UserId
 from just_chat.presentation.interactor_factory.user import UserInteractorFactory
@@ -18,5 +18,5 @@ async def get_user_by_id(
     async with interactor_factory.get_user() as get_user_interactor:
         try:
             return await get_user_interactor(UserId(user_id))
-        except UserNotFound:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
+        except UserNotFoundError as err:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND) from err

@@ -3,11 +3,10 @@ from typing import NewType
 
 from just_chat.domain.models.user import UserId
 
-
 SessionToken = NewType("SessionToken", str)
 
 
-class SessionNotFound(ValueError):
+class SessionNotFoundError(ValueError):
     pass
 
 

@@ -1,7 +1,7 @@
 import asyncio
 from dataclasses import asdict
 
-from just_chat.application.common.message_gateway import MessageGateway, MessageNotFound
+from just_chat.application.common.message_gateway import MessageGateway, MessageNotFoundError
 from just_chat.domain.models.chat import ChatId
 from just_chat.domain.models.message import Message, MessageId
 
@@ -15,7 +15,7 @@ class RAMMessageGateway(MessageGateway):
     async def save_message(self, message: Message) -> Message:
         async with self.next_message_id_lock:
             message_in_db = Message(
-                **asdict(message) | {"id": self.next_message_id}
+                **asdict(message) | {"id": self.next_message_id},
             )
             type(self).next_message_id += 1
 
@@ -28,12 +28,7 @@ class RAMMessageGateway(MessageGateway):
             if message.id == id_:
                 return message
 
-        raise MessageNotFound(f"Message with id {id_} not found")
+        raise MessageNotFoundError(f"Message with id {id_} not found")
 
     async def get_chat_messages_by_chat_id(self, chat_id: ChatId) -> list[Message]:
-        messages = []
-        for message in RAM_MESSAGES_DB:
-            if message.chat_id == chat_id:
-                messages.append(message)
-
-        return messages
+        return [message for message in RAM_MESSAGES_DB if message.chat_id == chat_id]

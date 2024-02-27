@@ -25,7 +25,7 @@ class CreateMessage(Interactor[NewMessageDTO, Message]):
             event_service: EventService,
             event_gateway: EventGateway,
             message_gateway: MessageGateway,
-            id_provider: IdProvider
+            id_provider: IdProvider,
     ) -> None:
         self._chat_access_service = chat_access_service
         self._chat_gateway = chat_gateway
@@ -47,7 +47,7 @@ class CreateMessage(Interactor[NewMessageDTO, Message]):
                 chat_id=data.chat_id,
                 author_id=user_id,
                 owner_id=user_id,
-            )
+            ),
         )
 
         assert message.id is not None

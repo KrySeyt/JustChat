@@ -1,11 +1,11 @@
 from typing import Annotated
 
-from fastapi import Depends, Body
+from fastapi import Body, Depends
 
-from just_chat.application.user.create_user import NewUserDTO, CreatedUserDTO
-from .router import user_router
-from just_chat.presentation.web_api.dependencies.user import get_hashed_password
+from just_chat.application.user.create_user import CreatedUserDTO, NewUserDTO
 from just_chat.presentation.interactor_factory.user import UserInteractorFactory
+from just_chat.presentation.web_api.dependencies.user import get_hashed_password
+from .router import user_router
 
 
 @user_router.post(r"/")

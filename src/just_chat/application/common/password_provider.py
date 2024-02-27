@@ -1,7 +1,7 @@
-from abc import abstractmethod, ABC
+from abc import ABC, abstractmethod
 
 
-class PasswordProvider(ABC):  # TODO: mb better naming?
+class PasswordProvider(ABC):
     @abstractmethod
     def hash_password(self, password: str) -> str:
         raise NotImplementedError

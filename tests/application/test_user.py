@@ -3,7 +3,7 @@ from unittest.mock import Mock, AsyncMock
 import pytest
 
 from just_chat.application.common.password_provider import PasswordProvider
-from just_chat.application.common.session_gateway import SessionGateway, SessionNotFound
+from just_chat.application.common.session_gateway import SessionGateway, SessionNotFoundError
 from just_chat.application.common.user_gateway import UserGateway
 from just_chat.application.user.create_user import CreateUser, NewUserDTO
 from just_chat.application.user.get_user_by_id import GetUserById
@@ -50,7 +50,7 @@ def session_gateway() -> SessionGateway:
     async def get(token: str):
         if token in gateway.user_ids:
             return gateway.user_ids[token]
-        raise SessionNotFound
+        raise SessionNotFoundError
 
     gateway.get_user_id = get
     return gateway

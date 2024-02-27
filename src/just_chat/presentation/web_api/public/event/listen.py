@@ -1,14 +1,14 @@
 import asyncio
 from typing import Annotated, Any
 
-from fastapi import WebSocket, Depends
-from starlette.websockets import WebSocketState, WebSocketDisconnect
+from fastapi import Depends, WebSocket
+from starlette.websockets import WebSocketDisconnect, WebSocketState
 
-from just_chat.application.common.event_bus import EventBus, ConnectionClosed
+from just_chat.application.common.event_bus import ConnectionClosedError, EventBus
 from just_chat.application.common.id_provider import IdProvider
 from just_chat.presentation.interactor_factory.event import EventInteractorFactory
 from just_chat.presentation.web_api.dependencies.stub import Stub
-from just_chat.presentation.web_api.public.event import event_router
+from just_chat.presentation.web_api.public.event.router import event_router
 
 
 class WebsocketEventBus(EventBus):
@@ -18,8 +18,8 @@ class WebsocketEventBus(EventBus):
     async def send_json(self, data: Any) -> None:
         try:
             await self._websocket.send_json(data)
-        except WebSocketDisconnect:
-            raise ConnectionClosed
+        except WebSocketDisconnect as err:
+            raise ConnectionClosedError from err
 
 
 @event_router.websocket("/listen")

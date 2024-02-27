@@ -1,4 +1,5 @@
-from typing import TypeVar, Callable
+from collections.abc import Callable
+from typing import TypeVar
 
 from fastapi import FastAPI
 from passlib.handlers.argon2 import argon2
@@ -6,7 +7,7 @@ from passlib.handlers.argon2 import argon2
 from just_chat.adapters.security.password_provider import HashingPasswordProvider
 from just_chat.application.common.id_provider import IdProvider
 from just_chat.application.common.password_provider import PasswordProvider
-from just_chat.main.ioc import ChatIoC, UserIoC, MessageIoC, EventIoC
+from just_chat.main.ioc import ChatIoC, EventIoC, MessageIoC, UserIoC
 from just_chat.presentation.interactor_factory.chat import ChatInteractorFactory
 from just_chat.presentation.interactor_factory.event import EventInteractorFactory
 from just_chat.presentation.interactor_factory.message import MessageInteractorFactory

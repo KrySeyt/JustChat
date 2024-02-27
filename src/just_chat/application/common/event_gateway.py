@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import Sequence
+from collections.abc import Sequence
 
 from just_chat.application.common.event_bus import EventBus
 from just_chat.domain.models.event import NewMessage

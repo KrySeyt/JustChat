@@ -1,7 +1,7 @@
-from typing import Sequence
+from collections.abc import Sequence
 
-from ..models.chat import Chat
-from ..models.user import UserId
+from just_chat.domain.models.chat import Chat
+from just_chat.domain.models.user import UserId
 
 
 class ChatService:

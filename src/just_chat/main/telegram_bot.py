@@ -3,7 +3,7 @@ import logging
 import sys
 from os import getenv
 
-from aiogram import Dispatcher, Bot
+from aiogram import Bot, Dispatcher
 from aiogram.enums import ParseMode
 
 from just_chat.main.ioc import UserIoC
@@ -14,7 +14,7 @@ async def main() -> None:
     user_ioc = UserIoC()
 
     dispatcher = Dispatcher(
-        user_ioc=user_ioc
+        user_ioc=user_ioc,
     )
 
     dispatcher.include_router(router)

@@ -1,10 +1,10 @@
 from aiogram.fsm.context import FSMContext
 from aiogram.types import Message
 
-from just_chat.application.user.login import Login, LoginDTO, WrongCredentials
+from just_chat.application.user.login import Login, LoginDTO, WrongCredentialsError
 from just_chat.presentation.interactor_factory.user import UserInteractorFactory
 from just_chat.presentation.telegram_bot.get_chats import get_chats
-from just_chat.presentation.telegram_bot.router import  router
+from just_chat.presentation.telegram_bot.router import router
 from just_chat.presentation.telegram_bot.states import LoginForm
 
 
@@ -46,7 +46,7 @@ async def authenticate(interactor: Login, message: Message, state: FSMContext) -
             username=data["login"],
             password=data["password"],
         ))
-    except WrongCredentials:
+    except WrongCredentialsError:
         await message.answer("Authentication failed")
         await state.clear()
         await get_login(message, state)

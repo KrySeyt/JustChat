@@ -35,5 +35,5 @@ class CreateUser(Interactor[NewUserDTO, CreatedUserDTO]):
 
         return CreatedUserDTO(
             id=user.id,
-            username=user.username
+            username=user.username,
         )

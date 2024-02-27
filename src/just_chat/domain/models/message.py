@@ -1,8 +1,8 @@
 from dataclasses import dataclass
 from typing import NewType
 
-from .user import UserId
 from .chat import ChatId
+from .user import UserId
 
 MessageId = NewType("MessageId", int)
 

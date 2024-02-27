@@ -1,5 +1,5 @@
-from ..models.user import UserId
-from ..models.notification import NotificationsSettings
+from just_chat.domain.models.notification import NotificationsSettings
+from just_chat.domain.models.user import UserId
 
 
 class NotificationsSettingsService:

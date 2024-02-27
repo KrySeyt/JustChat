@@ -1,4 +1,4 @@
-from ..models.user import User
+from just_chat.domain.models.user import User
 
 
 class UserService:

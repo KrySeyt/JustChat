@@ -24,5 +24,5 @@ class GetUserById(Interactor[UserId, UserDTO]):
 
         return UserDTO(
             id=user.id,
-            username=user.username
+            username=user.username,
         )

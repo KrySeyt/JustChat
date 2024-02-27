@@ -4,7 +4,7 @@ from just_chat.domain.models.chat import Chat, ChatId
 from just_chat.domain.models.user import UserId
 
 
-class ChatNotFound(ValueError):
+class ChatNotFoundError(ValueError):
     pass
 
 

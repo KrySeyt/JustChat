@@ -2,9 +2,9 @@ import asyncio
 from dataclasses import asdict
 
 from just_chat.adapters.database.ram_user_db import RAM_USERS_DB
-from just_chat.application.common.chat_gateway import ChatGateway, ChatNotFound
-from just_chat.application.common.user_gateway import UserNotFound
-from just_chat.domain.models.chat import ChatId, Chat
+from just_chat.application.common.chat_gateway import ChatGateway, ChatNotFoundError
+from just_chat.application.common.user_gateway import UserNotFoundError
+from just_chat.domain.models.chat import Chat, ChatId
 from just_chat.domain.models.user import UserId
 
 RAM_CHATS_DB: list[Chat] = []
@@ -17,7 +17,7 @@ class RAMChatGateway(ChatGateway):
     async def save_chat(self, chat: Chat) -> Chat:
         async with self.next_chat_id_lock:
             chat_in_db = Chat(
-                **asdict(chat) | {"id": self.next_chat_id}
+                **asdict(chat) | {"id": self.next_chat_id},
             )
             type(self).next_chat_id += 1
 
@@ -33,7 +33,7 @@ class RAMChatGateway(ChatGateway):
 
         for user in RAM_USERS_DB:
             assert user.id is not None
-            
+
             if user.id in excluded_users_ids:
                 continue
 
@@ -48,14 +48,14 @@ class RAMChatGateway(ChatGateway):
 
             return chat
 
-        raise UserNotFound
+        raise UserNotFoundError
 
     async def get_chat_by_id(self, id_: ChatId) -> Chat:
         for chat in RAM_CHATS_DB:
             if chat.id == id_:
                 return chat
 
-        raise ChatNotFound(f"Chat with id {id_} not found")
+        raise ChatNotFoundError(f"Chat with id {id_} not found")
 
     async def delete_chat_by_id(self, id_: ChatId) -> Chat:
         chat = await self.get_chat_by_id(id_)

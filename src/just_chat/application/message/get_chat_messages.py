@@ -14,7 +14,7 @@ class GetChatMessages(Interactor[ChatId, list[Message]]):
             chat_access_service: ChatAccessService,
             message_gateway: MessageGateway,
             chat_gateway: ChatGateway,
-            id_provider: IdProvider
+            id_provider: IdProvider,
     ) -> None:
         self._chat_access_service = chat_access_service
         self._message_gateway = message_gateway

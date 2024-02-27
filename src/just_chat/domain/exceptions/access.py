@@ -1,5 +1,5 @@
-from just_chat.domain.exceptions import DomainError
+from just_chat.domain.exceptions.base import DomainError
 
 
-class AccessDenied(DomainError):
+class AccessDeniedError(DomainError):
     pass

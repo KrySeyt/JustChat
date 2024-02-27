@@ -1,5 +1,5 @@
+from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
-from typing import AsyncGenerator
 
 from passlib.handlers.argon2 import argon2
 
@@ -14,14 +14,14 @@ from just_chat.application.chat.create_chat_with_random_user import CreateChatWi
 from just_chat.application.chat.delete_chat import DeleteChat
 from just_chat.application.chat.get_chat import GetChat
 from just_chat.application.common.id_provider import IdProvider
+from just_chat.application.event.add_user_event_bus import AddUserEventBus
+from just_chat.application.event.delete_user_event_bus import DeleteUserEventBus
 from just_chat.application.message.create_message import CreateMessage
 from just_chat.application.message.get_chat_messages import GetChatMessages
 from just_chat.application.user.create_user import CreateUser
 from just_chat.application.user.get_user_by_id import GetUserById
 from just_chat.application.user.get_user_by_token import GetUserIdByToken
 from just_chat.application.user.login import Login
-from just_chat.application.event.add_user_event_bus import AddUserEventBus
-from just_chat.application.event.delete_user_event_bus import DeleteUserEventBus
 from just_chat.domain.services.chat import ChatService
 from just_chat.domain.services.chat_access import ChatAccessService
 from just_chat.domain.services.event import EventService
@@ -48,7 +48,7 @@ class ChatIoC(ChatInteractorFactory):
     @asynccontextmanager
     async def create_chat_with_random_user(
             self,
-            id_provider: IdProvider
+            id_provider: IdProvider,
     ) -> AsyncGenerator[CreateChatWithRandomUser, None]:
         yield CreateChatWithRandomUser(
             ChatService(),
@@ -72,7 +72,7 @@ class UserIoC(UserInteractorFactory):
     async def get_user(self) -> AsyncGenerator[GetUserById, None]:
         yield GetUserById(
             UserService(),
-            self._user_gateway
+            self._user_gateway,
         )
 
     @asynccontextmanager
@@ -85,7 +85,7 @@ class UserIoC(UserInteractorFactory):
     async def create_user(self) -> AsyncGenerator[CreateUser, None]:
         yield CreateUser(
             UserService(),
-            self._user_gateway
+            self._user_gateway,
         )
 
     @asynccontextmanager

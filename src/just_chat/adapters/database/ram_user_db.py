@@ -1,9 +1,9 @@
 import asyncio
+from collections.abc import Container
 from dataclasses import asdict
-from typing import Container
 
-from just_chat.application.common.user_gateway import UserGateway, UserNotFound
-from just_chat.domain.models.user import UserId, User
+from just_chat.application.common.user_gateway import UserGateway, UserNotFoundError
+from just_chat.domain.models.user import User, UserId
 
 RAM_USERS_DB: list[User] = []
 
@@ -15,7 +15,7 @@ class RAMUserGateway(UserGateway):
     async def save_user(self, user: User) -> User:
         async with self.next_user_id_lock:
             user_in_db = User(
-                **asdict(user) | {"id": self.next_user_id}
+                **asdict(user) | {"id": self.next_user_id},
             )
             type(self).next_user_id += 1
 
@@ -28,21 +28,21 @@ class RAMUserGateway(UserGateway):
             if user.id == id_:
                 return user
 
-        raise UserNotFound(f"User with id {id_} not found")
+        raise UserNotFoundError(f"User with id {id_} not found")
 
     async def get_user_by_username(self, username: str) -> User:
         for user in RAM_USERS_DB:
             if user.username == username:
                 return user
 
-        raise UserNotFound(f"User with username {username} not found")
+        raise UserNotFoundError(f"User with username {username} not found")
 
     async def get_random_user(self, exclude: Container[UserId]) -> User:
         for user in RAM_USERS_DB:
             if user.id not in exclude:
                 return user
 
-        raise UserNotFound("User not found")
+        raise UserNotFoundError("User not found")
 
     async def delete_user_by_id(self, id_: UserId) -> User:
         user = await self.get_user_by_id(id_)

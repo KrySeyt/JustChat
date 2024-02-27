@@ -4,7 +4,7 @@ from just_chat.domain.models.chat import ChatId
 from just_chat.domain.models.message import Message, MessageId
 
 
-class MessageNotFound(ValueError):
+class MessageNotFoundError(ValueError):
     pass
 
 

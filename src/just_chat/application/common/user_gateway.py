@@ -1,10 +1,10 @@
 from abc import ABC, abstractmethod
-from typing import Container
+from collections.abc import Container
 
 from just_chat.domain.models.user import User, UserId
 
 
-class UserNotFound(ValueError):
+class UserNotFoundError(ValueError):
     pass
 
 

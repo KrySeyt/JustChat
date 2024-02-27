@@ -1,5 +1,5 @@
 __all__ = [
-    "api_router"
+    "api_router",
 ]
 
 from fastapi import APIRouter

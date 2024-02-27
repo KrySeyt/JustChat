@@ -1,8 +1,8 @@
 __all__ = (
     "DomainError",
-    "AccessDenied",
+    "AccessDeniedError",
 )
 
 
-from .base import DomainError  # noqa F401
-from .access import AccessDenied  # noqa F401
+from .access import AccessDeniedError
+from .base import DomainError

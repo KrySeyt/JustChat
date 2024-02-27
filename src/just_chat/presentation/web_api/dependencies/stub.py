@@ -1,4 +1,5 @@
-from typing import Callable, Any
+from collections.abc import Callable
+from typing import Any
 
 
 class Stub:
@@ -23,7 +24,7 @@ class Stub:
     def __call__(self) -> None:
         raise NotImplementedError
 
-    def __eq__(self, other: Any) -> bool:
+    def __eq__(self, other: object) -> bool:
         if isinstance(other, Stub):
             return (
                     self._dependency == other._dependency
@@ -31,7 +32,7 @@ class Stub:
             )
         else:
             if not self._kwargs:
-                return self._dependency == other  # type: ignore[no-any-return]
+                return self._dependency == other
             return False
 
     def __hash__(self) -> int:

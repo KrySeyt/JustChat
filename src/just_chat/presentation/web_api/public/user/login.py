@@ -1,11 +1,11 @@
 from typing import Annotated
 
-from fastapi import Depends, Body, Response, status, HTTPException
+from fastapi import Body, Depends, HTTPException, Response, status
 
-from just_chat.application.common.user_gateway import UserNotFound
-from just_chat.application.user.login import LoginDTO, WrongCredentials
-from .router import user_router
+from just_chat.application.common.user_gateway import UserNotFoundError
+from just_chat.application.user.login import LoginDTO, WrongCredentialsError
 from just_chat.presentation.interactor_factory.user import UserInteractorFactory
+from .router import user_router
 
 
 @user_router.post("/login")
@@ -21,8 +21,8 @@ async def login(
                 username=username,
                 password=password,
             ))
-    except (UserNotFound, WrongCredentials):
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST)
+    except (UserNotFoundError, WrongCredentialsError) as err:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST) from err
 
     response.set_cookie("token", value=token)
 

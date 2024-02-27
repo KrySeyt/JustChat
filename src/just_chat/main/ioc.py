@@ -20,11 +20,14 @@ from just_chat.application.user.create_user import CreateUser
 from just_chat.application.user.get_user_by_id import GetUserById
 from just_chat.application.user.get_user_by_token import GetUserIdByToken
 from just_chat.application.user.login import Login
+from just_chat.application.event.add_user_event_bus import AddUserEventBus
+from just_chat.application.event.delete_user_event_bus import DeleteUserEventBus
 from just_chat.domain.services.chat import ChatService
 from just_chat.domain.services.chat_access import ChatAccessService
 from just_chat.domain.services.event import EventService
 from just_chat.domain.services.user import UserService
 from just_chat.presentation.interactor_factory.chat import ChatInteractorFactory
+from just_chat.presentation.interactor_factory.event import EventInteractorFactory
 from just_chat.presentation.interactor_factory.message import MessageInteractorFactory
 from just_chat.presentation.interactor_factory.user import UserInteractorFactory
 
@@ -118,5 +121,26 @@ class MessageIoC(MessageInteractorFactory):
             ChatAccessService(),
             self._message_gateway,
             self._chat_gateway,
+            id_provider,
+        )
+
+
+class EventIoC(EventInteractorFactory):
+    def __init__(self) -> None:
+        self._chat_gateway = RAMChatGateway()
+        self._message_gateway = RAMMessageGateway()
+        self._event_gateway = WSEventGateway()
+
+    @asynccontextmanager
+    async def add_user_event_bus(self, id_provider: IdProvider) -> AsyncGenerator[AddUserEventBus, None]:
+        yield AddUserEventBus(
+            self._event_gateway,
+            id_provider,
+        )
+
+    @asynccontextmanager
+    async def delete_user_event_bus(self, id_provider: IdProvider) -> AsyncGenerator[DeleteUserEventBus, None]:
+        yield DeleteUserEventBus(
+            self._event_gateway,
             id_provider,
         )

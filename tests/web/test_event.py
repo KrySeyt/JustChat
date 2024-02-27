@@ -39,6 +39,7 @@ async def test_new_message_event(client, chat_gateway, user_gateway, message_gat
         "Cookie": f"token={token}"
     }
     with client.websocket_connect(r"ws://localhost:8000/event/listen", headers=headers) as websocket:
+        
         response = client.post(
             r"/message",
             json={

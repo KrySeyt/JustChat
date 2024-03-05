@@ -7,7 +7,7 @@ from just_chat.domain.models.user import User
 
 
 @pytest.mark.asyncio
-async def test_new_message_event(client, chat_gateway, user_gateway, message_gateway, password_provider):
+async def test_new_message_event(client, chat_gateway, user_gateway, message_gateway, password_provider, session_gateway):
     user1 = await user_gateway.save_user(User(
         id=None,
         username="new_message_event1",
@@ -56,9 +56,3 @@ async def test_new_message_event(client, chat_gateway, user_gateway, message_gat
             "event": "new_message",
             "message": response_json
         }
-
-
-
-
-
-

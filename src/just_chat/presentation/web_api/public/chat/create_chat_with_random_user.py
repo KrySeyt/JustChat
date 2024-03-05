@@ -1,9 +1,10 @@
 from typing import Annotated
 
-from fastapi import Depends
+from fastapi import Depends, HTTPException
 
 from just_chat.application.chat.create_chat_with_random_user import NewChatDTO
 from just_chat.application.common.id_provider import IdProvider
+from just_chat.application.common.user_gateway import UserNotFoundError
 from just_chat.domain.models.chat import Chat
 from just_chat.presentation.interactor_factory.chat import ChatInteractorFactory
 from just_chat.presentation.web_api.dependencies.stub import Stub
@@ -16,5 +17,8 @@ async def create_chat_with_random_user(
         id_provider: Annotated[IdProvider, Depends(Stub(IdProvider))],
         data: NewChatDTO,
 ) -> Chat:
-    async with interactor_factory.create_chat_with_random_user(id_provider) as create_chat_interactor:
-        return await create_chat_interactor(data)
+    try:
+        async with interactor_factory.create_chat_with_random_user(id_provider) as create_chat_interactor:
+            return await create_chat_interactor(data)
+    except UserNotFoundError as err:
+        raise HTTPException(status_code=400, detail="No user available") from err

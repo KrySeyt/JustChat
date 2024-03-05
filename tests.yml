@@ -1,12 +1,13 @@
 version: "3.8"
 
 services:
-  just_chat:
+  just_chat_tests:
     build:
       dockerfile: Dockerfile.dev
     volumes:
       - ./src/:/just_chat/src:ro
       - ./alembic:/just_chat/alembic
+      - ./tests:/just_chat/tests
     environment:
       - POSTGRES_URI=postgresql://postgres:postgres@postgres:5432/postgres
     ports:
@@ -14,6 +15,7 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
+    entrypoint: bash -c "alembic upgrade head && pytest -vvv"
 
   postgres:
     image: postgres:latest

@@ -28,4 +28,4 @@ jobs:
 
     - name: Run tests
       run: |
-        pytest
+        docker compose -f tests.yml up --exit-code-from just_chat_tests

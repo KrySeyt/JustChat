@@ -1,4 +1,5 @@
 from collections.abc import Callable
+from os import getenv
 from typing import TypeVar
 
 from fastapi import FastAPI
@@ -23,10 +24,14 @@ def singleton(dependency: DependencyT) -> Callable[[], DependencyT]:
 
 
 def create_app() -> FastAPI:
-    chat_ioc = ChatIoC()
-    user_ioc = UserIoC()
-    message_ioc = MessageIoC()
-    event_ioc = EventIoC()
+    postgres_uri = getenv("POSTGRES_URI")
+    if postgres_uri is None:
+        raise ValueError("POSTGRES_URI is None")
+
+    chat_ioc = ChatIoC(postgres_uri)
+    user_ioc = UserIoC(postgres_uri)
+    message_ioc = MessageIoC(postgres_uri)
+    event_ioc = EventIoC(postgres_uri)
 
     app = FastAPI()
 
@@ -40,3 +45,6 @@ def create_app() -> FastAPI:
     app.dependency_overrides[IdProvider] = get_session_id_provider
 
     return app
+
+
+app = create_app()

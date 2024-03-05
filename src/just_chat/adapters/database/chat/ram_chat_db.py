@@ -1,7 +1,7 @@
 import asyncio
 from dataclasses import asdict
 
-from just_chat.adapters.database.ram_user_db import RAM_USERS_DB
+from just_chat.adapters.database.user.ram_user_db import RAM_USERS_DB
 from just_chat.application.common.chat_gateway import ChatGateway, ChatNotFoundError
 from just_chat.application.common.user_gateway import UserNotFoundError
 from just_chat.domain.models.chat import Chat, ChatId

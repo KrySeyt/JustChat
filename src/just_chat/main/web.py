@@ -5,16 +5,19 @@ from typing import TypeVar
 from fastapi import FastAPI
 from passlib.handlers.argon2 import argon2
 
-from just_chat.adapters.security.password_provider import HashingPasswordProvider
-from just_chat.application.common.id_provider import IdProvider
-from just_chat.application.common.password_provider import PasswordProvider
+from just_chat.chat.presentation.interactor_factory import ChatInteractorFactory
+from just_chat.chat.presentation.web import chat_router
+from just_chat.common.adapters.security.password_provider import HashingPasswordProvider
+from just_chat.common.application.password_provider import PasswordProvider
+from just_chat.event.presentation.interactor_factory import EventInteractorFactory
+from just_chat.event.presentation.web import event_router
 from just_chat.main.ioc import ChatIoC, EventIoC, MessageIoC, UserIoC
-from just_chat.presentation.interactor_factory.chat import ChatInteractorFactory
-from just_chat.presentation.interactor_factory.event import EventInteractorFactory
-from just_chat.presentation.interactor_factory.message import MessageInteractorFactory
-from just_chat.presentation.interactor_factory.user import UserInteractorFactory
-from just_chat.presentation.web_api import api_router
-from just_chat.presentation.web_api.dependencies.id_provider import get_session_id_provider
+from just_chat.message.presentation.interactor_factory import MessageInteractorFactory
+from just_chat.message.presentation.web import message_router
+from just_chat.user.application.id_provider import IdProvider
+from just_chat.user.presentation.interactor_factory import UserInteractorFactory
+from just_chat.user.presentation.web import user_router
+from just_chat.user.presentation.web.dependencies.id_provider import get_session_id_provider
 
 DependencyT = TypeVar("DependencyT")
 
@@ -35,7 +38,10 @@ def create_app() -> FastAPI:
 
     app = FastAPI()
 
-    app.include_router(api_router)
+    app.include_router(user_router)
+    app.include_router(chat_router)
+    app.include_router(message_router)
+    app.include_router(event_router)
 
     app.dependency_overrides[ChatInteractorFactory] = singleton(chat_ioc)
     app.dependency_overrides[UserInteractorFactory] = singleton(user_ioc)

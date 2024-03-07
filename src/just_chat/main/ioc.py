@@ -3,34 +3,34 @@ from contextlib import asynccontextmanager
 
 from passlib.handlers.argon2 import argon2
 
-from just_chat.adapters.database.chat.raw_sql_adapter import RawSQLChatGateway
-from just_chat.adapters.database.message.raw_sql_adapter import RawSQLMessageGateway
-from just_chat.adapters.database.session.ram_session_db import RAMSessionGateway
-from just_chat.adapters.database.user.raw_sql_adapter import RawSQLUserGateway
-from just_chat.adapters.events.websocket_event_gateway import WSEventGateway
-from just_chat.adapters.security.password_provider import HashingPasswordProvider
-from just_chat.adapters.sql_executor import PsycopgSQLExecutor
-from just_chat.application.chat.create_chat import CreateChat
-from just_chat.application.chat.create_chat_with_random_user import CreateChatWithRandomUser
-from just_chat.application.chat.delete_chat import DeleteChat
-from just_chat.application.chat.get_chat import GetChat
-from just_chat.application.common.id_provider import IdProvider
-from just_chat.application.event.add_user_event_bus import AddUserEventBus
-from just_chat.application.event.delete_user_event_bus import DeleteUserEventBus
-from just_chat.application.message.create_message import CreateMessage
-from just_chat.application.message.get_chat_messages import GetChatMessages
-from just_chat.application.user.create_user import CreateUser
-from just_chat.application.user.get_user_by_id import GetUserById
-from just_chat.application.user.get_user_by_token import GetUserIdByToken
-from just_chat.application.user.login import Login
-from just_chat.domain.services.chat import ChatService
-from just_chat.domain.services.chat_access import ChatAccessService
-from just_chat.domain.services.event import EventService
-from just_chat.domain.services.user import UserService
-from just_chat.presentation.interactor_factory.chat import ChatInteractorFactory
-from just_chat.presentation.interactor_factory.event import EventInteractorFactory
-from just_chat.presentation.interactor_factory.message import MessageInteractorFactory
-from just_chat.presentation.interactor_factory.user import UserInteractorFactory
+from just_chat.chat.adapters.database.raw_sql_chat_gateway import RawSQLChatGateway
+from just_chat.chat.application.create_chat import CreateChat
+from just_chat.chat.application.create_chat_with_random_user import CreateChatWithRandomUser
+from just_chat.chat.application.delete_chat import DeleteChat
+from just_chat.chat.application.get_chat import GetChat
+from just_chat.chat.domain.services.chat import ChatService
+from just_chat.chat.domain.services.chat_access import ChatAccessService
+from just_chat.chat.presentation.interactor_factory import ChatInteractorFactory
+from just_chat.common.adapters.database.postgres_sql_executor import PsycopgSQLExecutor
+from just_chat.common.adapters.security.password_provider import HashingPasswordProvider
+from just_chat.event.adapters.event_bus.websocket_event_gateway import WSEventGateway
+from just_chat.event.application.add_user_event_bus import AddUserEventBus
+from just_chat.event.application.delete_user_event_bus import DeleteUserEventBus
+from just_chat.event.domain.services.event import EventService
+from just_chat.event.presentation.interactor_factory import EventInteractorFactory
+from just_chat.message.adapters.database.raw_sql_message_gateway import RawSQLMessageGateway
+from just_chat.message.application.create_message import CreateMessage
+from just_chat.message.application.get_chat_messages import GetChatMessages
+from just_chat.message.presentation.interactor_factory import MessageInteractorFactory
+from just_chat.user.adapters.database.ram_session_gateway import RAMSessionGateway
+from just_chat.user.adapters.database.raw_sql_user_gateway import RawSQLUserGateway
+from just_chat.user.application.create_user import CreateUser
+from just_chat.user.application.get_user_by_id import GetUserById
+from just_chat.user.application.get_user_by_token import GetUserIdByToken
+from just_chat.user.application.id_provider import IdProvider
+from just_chat.user.application.login import Login
+from just_chat.user.domain.services.user import UserService
+from just_chat.user.presentation.interactor_factory import UserInteractorFactory
 
 
 class ChatIoC(ChatInteractorFactory):

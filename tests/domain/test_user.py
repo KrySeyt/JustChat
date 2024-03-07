@@ -1,5 +1,5 @@
-from just_chat.domain.models.user import User, UserId
-from just_chat.domain.services.user import UserService
+from just_chat.user.domain.models.user import UserId, User
+from just_chat.user.domain.services.user import UserService
 
 
 def test_create_user():

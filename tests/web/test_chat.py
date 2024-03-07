@@ -1,7 +1,7 @@
 import pytest
 
-from just_chat.domain.models.chat import Chat
-from just_chat.domain.models.user import User
+from just_chat.chat.domain.models.chat import Chat
+from just_chat.user.domain.models.user import User
 
 
 @pytest.mark.asyncio
@@ -46,7 +46,7 @@ async def test_create_chat_with_random_user(
 ):
     await user_gateway.save_user(User(
         id=None,
-        username="username13",
+        username="create_chat_with_random_user",
         hashed_password=password_provider.hash_password("123")
     ))
     await user_gateway.save_user(User(
@@ -58,7 +58,7 @@ async def test_create_chat_with_random_user(
     response = client.post(
         r"/user/login",
         json={
-            "username": "username13",
+            "username": "create_chat_with_random_user",
             "password": "123"
         }
     )
@@ -69,7 +69,7 @@ async def test_create_chat_with_random_user(
     response = client.post(
         r"/chat/random",
         json={
-            "title": "Title",
+            "title": "Title"
         }
     )
 

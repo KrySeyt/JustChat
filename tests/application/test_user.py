@@ -2,14 +2,14 @@ from unittest.mock import Mock, AsyncMock
 
 import pytest
 
-from just_chat.application.common.password_provider import PasswordProvider
-from just_chat.application.common.session_gateway import SessionGateway, SessionNotFoundError
-from just_chat.application.common.user_gateway import UserGateway
-from just_chat.application.user.create_user import CreateUser, NewUserDTO
-from just_chat.application.user.get_user_by_id import GetUserById
-from just_chat.application.user.login import Login, LoginDTO
-from just_chat.domain.models.user import User, UserId
-from just_chat.domain.services.user import UserService
+from just_chat.common.application.password_provider import PasswordProvider
+from just_chat.user.application.create_user import NewUserDTO, CreateUser
+from just_chat.user.application.gateways.session_gateway import SessionNotFoundError, SessionGateway
+from just_chat.user.application.gateways.user_gateway import UserGateway
+from just_chat.user.application.get_user_by_id import GetUserById
+from just_chat.user.application.login import LoginDTO, Login
+from just_chat.user.domain.models.user import UserId, User
+from just_chat.user.domain.services.user import UserService
 
 USER_ID = UserId(1)
 USERNAME = "username"

@@ -1,9 +1,7 @@
-import asyncio
-
 import pytest
 
-from just_chat.domain.models.chat import Chat
-from just_chat.domain.models.user import User
+from just_chat.chat.domain.models.chat import Chat
+from just_chat.user.domain.models.user import User
 
 
 @pytest.mark.asyncio

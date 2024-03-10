@@ -10,11 +10,14 @@ services:
       - ./tests:/just_chat/tests
     environment:
       - POSTGRES_URI=postgresql://postgres:postgres@postgres:5432/postgres
+      - MONGO_URI=mongodb://mongo:27017/just_chat
     ports:
       - "8000:8000"
     depends_on:
       postgres:
         condition: service_healthy
+      mongo:
+        condition: service_started
     entrypoint: bash -c "alembic upgrade head && pytest -vvv"
 
   postgres:
@@ -27,4 +30,8 @@ services:
       interval: 1s
       timeout: 1s
       retries: 5
+
+  mongo:
+    image: mongo
+    restart: always
 

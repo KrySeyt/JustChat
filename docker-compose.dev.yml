@@ -9,11 +9,14 @@ services:
       - ./alembic:/just_chat/alembic
     environment:
       - POSTGRES_URI=postgresql://postgres:postgres@postgres:5432/postgres
+      - MONGO_URI=mongodb://mongo:27017/just_chat
     ports:
       - "8000:8000"
     depends_on:
       postgres:
         condition: service_healthy
+      mongo:
+        condition: service_started
 
   postgres:
     image: postgres:latest
@@ -26,3 +29,9 @@ services:
       timeout: 1s
       retries: 5
 
+  mongo:
+    image: mongo
+    restart: always
+#    environment:
+#      MONGO_INITDB_ROOT_USERNAME: "mongo"
+#      MONGO_INITDB_ROOT_PASSWORD: "mongo"

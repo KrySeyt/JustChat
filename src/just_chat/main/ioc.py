@@ -1,6 +1,7 @@
 from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
 
+from motor.motor_asyncio import AsyncIOMotorDatabase
 from passlib.handlers.argon2 import argon2
 
 from just_chat.chat.adapters.database.raw_sql_chat_gateway import RawSQLChatGateway
@@ -18,7 +19,7 @@ from just_chat.event.application.add_user_event_bus import AddUserEventBus
 from just_chat.event.application.delete_user_event_bus import DeleteUserEventBus
 from just_chat.event.domain.services.event import EventService
 from just_chat.event.presentation.interactor_factory import EventInteractorFactory
-from just_chat.message.adapters.database.raw_sql_message_gateway import RawSQLMessageGateway
+from just_chat.message.adapters.database.mongo_message_gateway import MongoMessageGateway
 from just_chat.message.application.create_message import CreateMessage
 from just_chat.message.application.get_chat_messages import GetChatMessages
 from just_chat.message.presentation.interactor_factory import MessageInteractorFactory
@@ -100,9 +101,9 @@ class UserIoC(UserInteractorFactory):
 
 
 class MessageIoC(MessageInteractorFactory):
-    def __init__(self, postgres_uri: str) -> None:
+    def __init__(self, postgres_uri: str, mongo_db: AsyncIOMotorDatabase) -> None:
         self._chat_gateway = RawSQLChatGateway(PsycopgSQLExecutor(postgres_uri))
-        self._message_gateway = RawSQLMessageGateway(PsycopgSQLExecutor(postgres_uri))
+        self._message_gateway = MongoMessageGateway(mongo_db)
         self._event_gateway = WSEventGateway()
 
     @asynccontextmanager
@@ -127,9 +128,9 @@ class MessageIoC(MessageInteractorFactory):
 
 
 class EventIoC(EventInteractorFactory):
-    def __init__(self, postgres_uri: str) -> None:
+    def __init__(self, postgres_uri: str, mongo_db: AsyncIOMotorDatabase) -> None:
         self._chat_gateway = RawSQLChatGateway(PsycopgSQLExecutor(postgres_uri))
-        self._message_gateway = RawSQLMessageGateway(PsycopgSQLExecutor(postgres_uri))
+        self._message_gateway = MongoMessageGateway(mongo_db)
         self._event_gateway = WSEventGateway()
 
     @asynccontextmanager

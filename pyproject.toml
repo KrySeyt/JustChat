@@ -67,7 +67,8 @@ dependencies = [
     "aiogram",
     "psycopg[binary]",
     "sqlalchemy",
-    "alembic"
+    "alembic",
+    "motor",
 ]
 
 [project.optional-dependencies]
@@ -85,7 +86,8 @@ migrations = [
 ]
 types-checking = [
     "mypy",
-    "types-passlib"
+    "types-passlib",
+    "motor-stubs"
 ]
 dev = [
     "just_chat[test, lint, types-checking]"

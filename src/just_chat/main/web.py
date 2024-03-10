@@ -3,6 +3,7 @@ from os import getenv
 from typing import TypeVar
 
 from fastapi import FastAPI
+from motor.motor_asyncio import AsyncIOMotorClient
 from passlib.handlers.argon2 import argon2
 
 from just_chat.chat.presentation.interactor_factory import ChatInteractorFactory
@@ -28,13 +29,23 @@ def singleton(dependency: DependencyT) -> Callable[[], DependencyT]:
 
 def create_app() -> FastAPI:
     postgres_uri = getenv("POSTGRES_URI")
+
     if postgres_uri is None:
         raise ValueError("POSTGRES_URI is None")
 
+    mongo_uri = getenv("MONGO_URI")
+
+    if mongo_uri is None:
+        raise ValueError("MONGO_URI is None")
+
+    mongo_client = AsyncIOMotorClient(mongo_uri)
+    _, mongo_db_name = mongo_uri.rsplit("/", maxsplit=1)
+    mongo_db = mongo_client[mongo_db_name]
+
     chat_ioc = ChatIoC(postgres_uri)
     user_ioc = UserIoC(postgres_uri)
-    message_ioc = MessageIoC(postgres_uri)
-    event_ioc = EventIoC(postgres_uri)
+    message_ioc = MessageIoC(postgres_uri, mongo_db)
+    event_ioc = EventIoC(postgres_uri, mongo_db)
 
     app = FastAPI()
 

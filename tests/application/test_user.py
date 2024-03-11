@@ -1,4 +1,4 @@
-from unittest.mock import Mock, AsyncMock
+from unittest.mock import Mock, AsyncMock, MagicMock
 
 import pytest
 
@@ -14,6 +14,11 @@ from just_chat.user.domain.services.user import UserService
 USER_ID = UserId(1)
 USERNAME = "username"
 PASSWORD = "123"
+
+
+@pytest.fixture()
+def transaction_manager():
+    return AsyncMock()
 
 
 @pytest.fixture()
@@ -64,10 +69,11 @@ def password_provider() -> PasswordProvider:
 
 
 @pytest.mark.asyncio
-async def test_create_user(user_gateway, password_provider):
+async def test_create_user(user_gateway, password_provider, transaction_manager):
     interactor = CreateUser(
         user_service=UserService(),
         user_gateway=user_gateway,
+        transaction_manager=transaction_manager
     )
 
     user = await interactor(NewUserDTO(
@@ -92,12 +98,13 @@ async def test_get_user(user_gateway):
 
 
 @pytest.mark.asyncio
-async def test_login(user_gateway, session_gateway, password_provider):
+async def test_login(user_gateway, session_gateway, password_provider, transaction_manager):
     interactor = Login(
         user_service=UserService(),
         user_gateway=user_gateway,
         password_provider=password_provider,
         session_gateway=session_gateway,
+        transaction_manager=transaction_manager
     )
 
     token = await interactor(LoginDTO(

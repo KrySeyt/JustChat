@@ -8,7 +8,14 @@ from just_chat.user.domain.models.user import User
 
 
 @pytest.mark.asyncio
-async def test_send_message_with_access(client, chat_gateway, user_gateway, message_gateway, password_provider):
+async def test_send_message_with_access(
+        client,
+        chat_gateway,
+        user_gateway,
+        message_gateway,
+        password_provider,
+        transaction_manager,
+):
     user1 = await user_gateway.save_user(User(
         id=None,
         username="send_message_with_access",
@@ -24,6 +31,8 @@ async def test_send_message_with_access(client, chat_gateway, user_gateway, mess
         title="Title",
         users_ids=[user1.id, user2.id],
     ))
+
+    await transaction_manager.commit()
 
     response = client.post(
         r"/user/login",
@@ -60,7 +69,14 @@ async def test_send_message_with_access(client, chat_gateway, user_gateway, mess
 
 
 @pytest.mark.asyncio
-async def test_send_message_with_no_access(client, chat_gateway, user_gateway, message_gateway, password_provider):
+async def test_send_message_with_no_access(
+        client,
+        chat_gateway,
+        user_gateway,
+        message_gateway,
+        password_provider,
+        transaction_manager,
+):
     user = await user_gateway.save_user(User(
         id=None,
         username="send_message_with_no_access",
@@ -71,6 +87,8 @@ async def test_send_message_with_no_access(client, chat_gateway, user_gateway, m
         title="Title",
         users_ids=[],
     ))
+
+    await transaction_manager.commit()
 
     response = client.post(
         r"/user/login",
@@ -95,7 +113,14 @@ async def test_send_message_with_no_access(client, chat_gateway, user_gateway, m
 
 
 @pytest.mark.asyncio
-async def test_get_chat_messages_with_access(client, chat_gateway, user_gateway, message_gateway, password_provider):
+async def test_get_chat_messages_with_access(
+        client,
+        chat_gateway,
+        user_gateway,
+        message_gateway,
+        password_provider,
+        transaction_manager
+):
     user1 = await user_gateway.save_user(User(
         id=None,
         username="get_chat_messages_with_access",
@@ -111,6 +136,9 @@ async def test_get_chat_messages_with_access(client, chat_gateway, user_gateway,
         title="Title",
         users_ids=[user1.id, user2.id],
     ))
+
+    await transaction_manager.commit()
+
     messages = []
     for text in ("Text1", "Text2", "Text3"):
         message = await message_gateway.save_message(Message(
@@ -153,7 +181,14 @@ async def test_get_chat_messages_with_access(client, chat_gateway, user_gateway,
 
 
 @pytest.mark.asyncio
-async def test_get_chat_messages_with_no_access(client, chat_gateway, user_gateway, message_gateway, password_provider):
+async def test_get_chat_messages_with_no_access(
+        client,
+        chat_gateway,
+        user_gateway,
+        message_gateway,
+        password_provider,
+        transaction_manager
+):
     user1 = await user_gateway.save_user(User(
         id=None,
         username="get_chat_messages_with_no_access",
@@ -164,6 +199,8 @@ async def test_get_chat_messages_with_no_access(client, chat_gateway, user_gatew
         title="Title",
         users_ids=[],
     ))
+
+    await transaction_manager.commit()
 
     response = client.post(
         r"/user/login",

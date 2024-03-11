@@ -45,7 +45,7 @@ def create_app() -> FastAPI:
     chat_ioc = ChatIoC(postgres_uri)
     user_ioc = UserIoC(postgres_uri)
     message_ioc = MessageIoC(postgres_uri, mongo_db)
-    event_ioc = EventIoC(postgres_uri, mongo_db)
+    event_ioc = EventIoC(mongo_db)
 
     app = FastAPI()
 

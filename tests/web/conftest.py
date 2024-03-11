@@ -1,18 +1,21 @@
 from os import getenv
+from typing import Any
 
 import passlib.hash
 import pytest
+import pytest_asyncio
 from fastapi.testclient import TestClient
 from motor.motor_asyncio import AsyncIOMotorClient, AsyncIOMotorDatabase
+from psycopg import AsyncConnection
 
 from just_chat.chat.adapters.database.raw_sql_chat_gateway import RawSQLChatGateway
 from just_chat.chat.application.gateways.chat_gateway import ChatGateway
 from just_chat.common.adapters.database.postgres_sql_executor import PsycopgSQLExecutor
+from just_chat.common.adapters.database.postgres_transaction_manager import PsycopgTransactionManager
 from just_chat.common.adapters.security.password_provider import HashingPasswordProvider
 from just_chat.common.application.password_provider import PasswordProvider
 from just_chat.main.web import create_app
 from just_chat.message.adapters.database.mongo_message_gateway import MongoMessageGateway
-from just_chat.message.adapters.database.raw_sql_message_gateway import RawSQLMessageGateway
 from just_chat.message.application.gateways.message_gateway import MessageGateway
 from just_chat.user.adapters.database.ram_session_gateway import RAMSessionGateway
 from just_chat.user.adapters.database.raw_sql_user_gateway import RawSQLUserGateway
@@ -48,16 +51,20 @@ def mongo_db(mongo_uri) -> AsyncIOMotorDatabase:
     return mongo_db
 
 
-@pytest.fixture()
-def client() -> TestClient:
-    app = create_app()
-    client = TestClient(app)
-    return client
+@pytest_asyncio.fixture()
+async def psycopg_conn(postgres_uri) -> AsyncConnection[Any]:
+    async with await AsyncConnection.connect(postgres_uri) as conn:
+        yield conn
 
 
 @pytest.fixture()
-def user_gateway(postgres_uri) -> UserGateway:
-    return RawSQLUserGateway(PsycopgSQLExecutor(postgres_uri))
+def transaction_manager(psycopg_conn) -> PsycopgTransactionManager:
+    yield PsycopgTransactionManager(psycopg_conn)
+
+
+@pytest.fixture()
+def user_gateway(psycopg_conn) -> UserGateway:
+    yield RawSQLUserGateway(PsycopgSQLExecutor(psycopg_conn))
 
 
 @pytest.fixture()
@@ -66,8 +73,8 @@ def session_gateway() -> SessionGateway:
 
 
 @pytest.fixture()
-def chat_gateway(postgres_uri) -> ChatGateway:
-    return RawSQLChatGateway(PsycopgSQLExecutor(postgres_uri))
+def chat_gateway(psycopg_conn) -> ChatGateway:
+    yield RawSQLChatGateway(PsycopgSQLExecutor(psycopg_conn))
 
 
 @pytest.fixture()
@@ -78,3 +85,11 @@ def message_gateway(mongo_db) -> MessageGateway:
 @pytest.fixture()
 def password_provider() -> PasswordProvider:
     return HashingPasswordProvider(passlib.hash.argon2)
+
+
+@pytest.fixture()
+def client() -> TestClient:
+    app = create_app()
+
+    client = TestClient(app)
+    return client

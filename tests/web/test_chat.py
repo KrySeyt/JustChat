@@ -5,7 +5,7 @@ from just_chat.user.domain.models.user import User
 
 
 @pytest.mark.asyncio
-async def test_create_chat(client, chat_gateway, user_gateway):
+async def test_create_chat(client, chat_gateway, user_gateway, transaction_manager):
     user1 = await user_gateway.save_user(User(
         id=None,
         username="Username1",
@@ -16,6 +16,8 @@ async def test_create_chat(client, chat_gateway, user_gateway):
         username="Username2",
         hashed_password="123"
     ))
+
+    await transaction_manager.commit()
 
     response = client.post(
         r"/admin/chat",
@@ -42,7 +44,8 @@ async def test_create_chat_with_random_user(
         client,
         chat_gateway,
         user_gateway,
-        password_provider
+        password_provider,
+        transaction_manager
 ):
     await user_gateway.save_user(User(
         id=None,
@@ -54,6 +57,8 @@ async def test_create_chat_with_random_user(
         username="Username2",
         hashed_password=password_provider.hash_password("123")
     ))
+
+    await transaction_manager.commit()
 
     response = client.post(
         r"/user/login",
@@ -88,7 +93,7 @@ async def test_create_chat_with_random_user(
 
 
 @pytest.mark.asyncio
-async def test_get_chat_by_id(client, chat_gateway, user_gateway):
+async def test_get_chat_by_id(client, chat_gateway, user_gateway, transaction_manager):
     user1 = await user_gateway.save_user(User(
         id=None,
         username="Username1",
@@ -104,6 +109,8 @@ async def test_get_chat_by_id(client, chat_gateway, user_gateway):
         title="Title",
         users_ids=[user1.id, user2.id],
     ))
+
+    await transaction_manager.commit()
 
     response = client.get(rf"/admin/chat/{chat.id}")
 
@@ -117,7 +124,7 @@ async def test_get_chat_by_id(client, chat_gateway, user_gateway):
 
 
 @pytest.mark.asyncio
-async def test_delete_chat_by_id(client, chat_gateway, user_gateway):
+async def test_delete_chat_by_id(client, chat_gateway, user_gateway, transaction_manager):
     user1 = await user_gateway.save_user(User(
         id=None,
         username="Username1",
@@ -133,6 +140,8 @@ async def test_delete_chat_by_id(client, chat_gateway, user_gateway):
         title="Title",
         users_ids=[user1.id, user2.id],
     ))
+
+    await transaction_manager.commit()
 
     response = client.delete(rf"/admin/chat/{chat.id}")
     assert response.status_code == 200

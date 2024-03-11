@@ -1,5 +1,5 @@
 import random
-from unittest.mock import AsyncMock
+from unittest.mock import AsyncMock, MagicMock
 
 import pytest
 
@@ -14,6 +14,11 @@ from just_chat.user.domain.models.user import UserId
 CHAT_ID = ChatId(1)
 CHAT_TITLE = "Title"
 CHAT_USER_IDS = [UserId(1), UserId(2)]
+
+
+@pytest.fixture()
+def transaction_manager():
+    return AsyncMock()
 
 
 @pytest.fixture()
@@ -46,10 +51,11 @@ def chat_gateway() -> ChatGateway:
 
 
 @pytest.mark.asyncio
-async def test_create_chat(chat_gateway):
+async def test_create_chat(chat_gateway, transaction_manager):
     interactor = CreateChat(
         chat_service=ChatService(),
         chat_gateway=chat_gateway,
+        transaction_manager=transaction_manager,
     )
 
     chat = await interactor(data=NewChatDTO(
@@ -79,14 +85,14 @@ async def test_get_chat(chat_gateway):
 
 
 @pytest.mark.asyncio
-async def test_delete_chat_by_id(chat_gateway):
+async def test_delete_chat_by_id(chat_gateway, transaction_manager):
     chat_id = (await chat_gateway.save_chat(Chat(
         id=None,
         title=CHAT_TITLE,
         users_ids=CHAT_USER_IDS
     ))).id
 
-    interactor = DeleteChat(chat_gateway)
+    interactor = DeleteChat(chat_gateway, transaction_manager)
     chat = await interactor(ChatId(chat_id))
 
     assert chat.id == chat_id

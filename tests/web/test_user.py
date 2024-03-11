@@ -25,12 +25,14 @@ async def test_create_user(client, user_gateway):
 
 
 @pytest.mark.asyncio
-async def test_get_user_by_id(client, user_gateway):
+async def test_get_user_by_id(client, user_gateway, transaction_manager):
     user = await user_gateway.save_user(User(
         id=None,
         username="Username",
         hashed_password="123"
     ))
+
+    await transaction_manager.commit()
 
     response = client.get(rf"/admin/user/{user.id}")
     assert response.status_code == 200
@@ -41,12 +43,14 @@ async def test_get_user_by_id(client, user_gateway):
 
 
 @pytest.mark.asyncio
-async def test_login(client, user_gateway, password_provider, session_gateway):
+async def test_login(client, user_gateway, password_provider, session_gateway, transaction_manager):
     user = await user_gateway.save_user(User(
         id=None,
         username="test_login",
         hashed_password=password_provider.hash_password("123")
     ))
+
+    await transaction_manager.commit()
 
     response = client.post(
         rf"/user/login",

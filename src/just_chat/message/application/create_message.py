@@ -4,6 +4,7 @@ from just_chat.chat.application.gateways.chat_gateway import ChatGateway
 from just_chat.chat.domain.models.chat import ChatId
 from just_chat.chat.domain.services.chat_access import ChatAccessService
 from just_chat.common.application.interactor import Interactor
+from just_chat.common.application.transaction_manager import TransactionManager
 from just_chat.event.application.gateways.event_gateway import EventGateway
 from just_chat.event.domain.services.event import EventService
 from just_chat.message.application.gateways.message_gateway import MessageGateway
@@ -26,6 +27,7 @@ class CreateMessage(Interactor[NewMessageDTO, Message]):
             event_gateway: EventGateway,
             message_gateway: MessageGateway,
             id_provider: IdProvider,
+            transaction_manager: TransactionManager,
     ) -> None:
         self._chat_access_service = chat_access_service
         self._chat_gateway = chat_gateway
@@ -33,6 +35,7 @@ class CreateMessage(Interactor[NewMessageDTO, Message]):
         self._event_gateway = event_gateway
         self._message_gateway = message_gateway
         self._id_provider = id_provider
+        self._transaction_manager = transaction_manager
 
     async def __call__(self, data: NewMessageDTO) -> Message:
         chat = await self._chat_gateway.get_chat_by_id(data.chat_id)
@@ -54,5 +57,7 @@ class CreateMessage(Interactor[NewMessageDTO, Message]):
 
         new_message_event = self._event_service.create_new_message_event(message)
         await self._event_gateway.send_new_message_event(new_message_event, chat.users_ids)
+
+        await self._transaction_manager.commit()
 
         return message

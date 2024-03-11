@@ -3,6 +3,7 @@ from dataclasses import dataclass
 
 from just_chat.common.application.interactor import Interactor
 from just_chat.common.application.password_provider import PasswordProvider
+from just_chat.common.application.transaction_manager import TransactionManager
 from just_chat.user.application.gateways.session_gateway import SessionGateway, SessionToken
 from just_chat.user.application.gateways.user_gateway import UserGateway, UserNotFoundError
 from just_chat.user.domain.services.user import UserService
@@ -25,11 +26,13 @@ class Login(Interactor[LoginDTO, SessionToken]):
             user_gateway: UserGateway,
             session_gateway: SessionGateway,
             password_provider: PasswordProvider,
+            transaction_manager: TransactionManager,
     ) -> None:
         self._user_service = user_service
         self._user_gateway = user_gateway
         self._session_gateway = session_gateway
         self._password_provider = password_provider
+        self._transaction_manager = transaction_manager
 
     async def __call__(self, data: LoginDTO) -> SessionToken:
         try:
@@ -45,5 +48,7 @@ class Login(Interactor[LoginDTO, SessionToken]):
         token = uuid.uuid4()
 
         await self._session_gateway.save_session_token(user.id, SessionToken(str(token)))
+
+        await self._transaction_manager.commit()
 
         return SessionToken(str(token))

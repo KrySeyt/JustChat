@@ -15,7 +15,7 @@ from just_chat.chat.domain.services.chat_access import ChatAccessService
 from just_chat.chat.presentation.interactor_factory import ChatInteractorFactory
 from just_chat.common.adapters.database.postgres_sql_executor import PsycopgSQLExecutor
 from just_chat.common.adapters.database.postgres_transaction_manager import PsycopgTransactionManager
-from just_chat.common.adapters.database.ram_transaction_manager import RAMTransactionManager
+from just_chat.common.adapters.database.transaction_manager_stub import TransactionManagerStub
 from just_chat.common.adapters.security.password_provider import HashingPasswordProvider
 from just_chat.event.adapters.event_bus.websocket_event_gateway import WSEventGateway
 from just_chat.event.application.add_user_event_bus import AddUserEventBus
@@ -161,7 +161,7 @@ class EventIoC(EventInteractorFactory):
         yield AddUserEventBus(
             self._event_gateway,
             id_provider,
-            transaction_manager=RAMTransactionManager(),
+            transaction_manager=TransactionManagerStub(),
         )
 
     @asynccontextmanager
@@ -169,5 +169,5 @@ class EventIoC(EventInteractorFactory):
         yield DeleteUserEventBus(
             self._event_gateway,
             id_provider,
-            transaction_manager=RAMTransactionManager(),
+            transaction_manager=TransactionManagerStub(),
         )

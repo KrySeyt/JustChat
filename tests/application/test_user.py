@@ -1,14 +1,14 @@
-from unittest.mock import Mock, AsyncMock, MagicMock
+from unittest.mock import AsyncMock, Mock
 
 import pytest
 
 from just_chat.common.application.password_provider import PasswordProvider
-from just_chat.user.application.create_user import NewUserDTO, CreateUser
-from just_chat.user.application.gateways.session_gateway import SessionNotFoundError, SessionGateway
+from just_chat.user.application.create_user import CreateUser, NewUserDTO
+from just_chat.user.application.gateways.session_gateway import SessionGateway, SessionNotFoundError
 from just_chat.user.application.gateways.user_gateway import UserGateway
 from just_chat.user.application.get_user_by_id import GetUserById
-from just_chat.user.application.login import LoginDTO, Login
-from just_chat.user.domain.models.user import UserId, User
+from just_chat.user.application.login import Login, LoginDTO
+from just_chat.user.domain.models.user import User, UserId
 from just_chat.user.domain.services.user import UserService
 
 USER_ID = UserId(1)
@@ -45,7 +45,7 @@ def user_gateway(password_provider) -> UserGateway:
 @pytest.fixture()
 def session_gateway() -> SessionGateway:
     gateway = AsyncMock()
-    gateway.user_ids = dict()
+    gateway.user_ids = {}
 
     async def save(user_id: UserId, token: str):
         gateway.user_ids[token] = user_id
@@ -73,7 +73,7 @@ async def test_create_user(user_gateway, password_provider, transaction_manager)
     interactor = CreateUser(
         user_service=UserService(),
         user_gateway=user_gateway,
-        transaction_manager=transaction_manager
+        transaction_manager=transaction_manager,
     )
 
     user = await interactor(NewUserDTO(
@@ -104,7 +104,7 @@ async def test_login(user_gateway, session_gateway, password_provider, transacti
         user_gateway=user_gateway,
         password_provider=password_provider,
         session_gateway=session_gateway,
-        transaction_manager=transaction_manager
+        transaction_manager=transaction_manager,
     )
 
     token = await interactor(LoginDTO(

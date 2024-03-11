@@ -19,12 +19,12 @@ async def test_send_message_with_access(
     user1 = await user_gateway.save_user(User(
         id=None,
         username="send_message_with_access",
-        hashed_password=password_provider.hash_password("123")
+        hashed_password=password_provider.hash_password("123"),
     ))
     user2 = await user_gateway.save_user(User(
         id=None,
         username="Username2",
-        hashed_password="123"
+        hashed_password="123",
     ))
     chat = await chat_gateway.save_chat(Chat(
         id=None,
@@ -39,7 +39,7 @@ async def test_send_message_with_access(
         json={
             "username": user1.username,
             "password": "123",
-        }
+        },
     )
 
     assert response.status_code == 200
@@ -50,7 +50,7 @@ async def test_send_message_with_access(
         json={
             "chat_id": chat.id,
             "text": "MessageText",
-        }
+        },
     )
 
     assert response.status_code == 200
@@ -80,7 +80,7 @@ async def test_send_message_with_no_access(
     user = await user_gateway.save_user(User(
         id=None,
         username="send_message_with_no_access",
-        hashed_password=password_provider.hash_password("123")
+        hashed_password=password_provider.hash_password("123"),
     ))
     chat = await chat_gateway.save_chat(Chat(
         id=None,
@@ -95,7 +95,7 @@ async def test_send_message_with_no_access(
         json={
             "username": user.username,
             "password": "123",
-        }
+        },
     )
 
     assert response.status_code == 200
@@ -106,7 +106,7 @@ async def test_send_message_with_no_access(
         json={
             "chat_id": chat.id,
             "text": "MessageText",
-        }
+        },
     )
 
     assert response.status_code == 403
@@ -119,17 +119,17 @@ async def test_get_chat_messages_with_access(
         user_gateway,
         message_gateway,
         password_provider,
-        transaction_manager
+        transaction_manager,
 ):
     user1 = await user_gateway.save_user(User(
         id=None,
         username="get_chat_messages_with_access",
-        hashed_password=password_provider.hash_password("123")
+        hashed_password=password_provider.hash_password("123"),
     ))
     user2 = await user_gateway.save_user(User(
         id=None,
         username="Username2",
-        hashed_password="123"
+        hashed_password="123",
     ))
     chat = await chat_gateway.save_chat(Chat(
         id=None,
@@ -156,7 +156,7 @@ async def test_get_chat_messages_with_access(
         json={
             "username": user1.username,
             "password": "123",
-        }
+        },
     )
 
     assert response.status_code == 200
@@ -176,8 +176,9 @@ async def test_get_chat_messages_with_access(
     for message in response_json:
         assert isinstance(message["id"], int)
 
-    messages_ids = {message["id"] for message in response_json}
-    assert messages_ids == messages_ids
+    messages_ids = {message.id for message in messages}
+    response_messages_ids = {message["id"] for message in response_json}
+    assert messages_ids == response_messages_ids
 
 
 @pytest.mark.asyncio
@@ -187,12 +188,12 @@ async def test_get_chat_messages_with_no_access(
         user_gateway,
         message_gateway,
         password_provider,
-        transaction_manager
+        transaction_manager,
 ):
     user1 = await user_gateway.save_user(User(
         id=None,
         username="get_chat_messages_with_no_access",
-        hashed_password=password_provider.hash_password("123")
+        hashed_password=password_provider.hash_password("123"),
     ))
     chat = await chat_gateway.save_chat(Chat(
         id=None,
@@ -207,7 +208,7 @@ async def test_get_chat_messages_with_no_access(
         json={
             "username": user1.username,
             "password": "123",
-        }
+        },
     )
 
     assert response.status_code == 200

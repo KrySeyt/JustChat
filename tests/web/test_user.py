@@ -11,7 +11,7 @@ async def test_create_user(client, user_gateway):
         json={
             "username": "Username",
             "password": "123",
-        }
+        },
     )
     assert response.status_code == 200
     response_json = response.json()
@@ -29,7 +29,7 @@ async def test_get_user_by_id(client, user_gateway, transaction_manager):
     user = await user_gateway.save_user(User(
         id=None,
         username="Username",
-        hashed_password="123"
+        hashed_password="123",
     ))
 
     await transaction_manager.commit()
@@ -47,17 +47,17 @@ async def test_login(client, user_gateway, password_provider, session_gateway, t
     user = await user_gateway.save_user(User(
         id=None,
         username="test_login",
-        hashed_password=password_provider.hash_password("123")
+        hashed_password=password_provider.hash_password("123"),
     ))
 
     await transaction_manager.commit()
 
     response = client.post(
-        rf"/user/login",
+        r"/user/login",
         json={
             "username": user.username,
             "password": "123",
-        }
+        },
     )
 
     assert response.status_code == 200

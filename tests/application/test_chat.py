@@ -1,13 +1,13 @@
 import random
-from unittest.mock import AsyncMock, MagicMock
+from unittest.mock import AsyncMock
 
 import pytest
 
-from just_chat.chat.application.create_chat import NewChatDTO, CreateChat
+from just_chat.chat.application.create_chat import CreateChat, NewChatDTO
 from just_chat.chat.application.delete_chat import DeleteChat
-from just_chat.chat.application.gateways.chat_gateway import ChatNotFoundError, ChatGateway
+from just_chat.chat.application.gateways.chat_gateway import ChatGateway, ChatNotFoundError
 from just_chat.chat.application.get_chat import GetChat
-from just_chat.chat.domain.models.chat import ChatId, Chat
+from just_chat.chat.domain.models.chat import Chat, ChatId
 from just_chat.chat.domain.services.chat import ChatService
 from just_chat.user.domain.models.user import UserId
 
@@ -24,7 +24,7 @@ def transaction_manager():
 @pytest.fixture()
 def chat_gateway() -> ChatGateway:
     gateway = AsyncMock()
-    gateway.db = dict()
+    gateway.db = {}
 
     async def save(chat: Chat):
         chat.id = random.randint(0, 99999)
@@ -73,7 +73,7 @@ async def test_get_chat(chat_gateway):
     chat_id = (await chat_gateway.save_chat(Chat(
         id=None,
         title=CHAT_TITLE,
-        users_ids=CHAT_USER_IDS
+        users_ids=CHAT_USER_IDS,
     ))).id
 
     interactor = GetChat(chat_gateway)
@@ -89,7 +89,7 @@ async def test_delete_chat_by_id(chat_gateway, transaction_manager):
     chat_id = (await chat_gateway.save_chat(Chat(
         id=None,
         title=CHAT_TITLE,
-        users_ids=CHAT_USER_IDS
+        users_ids=CHAT_USER_IDS,
     ))).id
 
     interactor = DeleteChat(chat_gateway, transaction_manager)

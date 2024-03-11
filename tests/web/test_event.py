@@ -17,12 +17,12 @@ async def test_new_message_event(
     user1 = await user_gateway.save_user(User(
         id=None,
         username="new_message_event1",
-        hashed_password=password_provider.hash_password("123")
+        hashed_password=password_provider.hash_password("123"),
     ))
     user2 = await user_gateway.save_user(User(
         id=None,
         username="new_message_event2",
-        hashed_password=password_provider.hash_password("123")
+        hashed_password=password_provider.hash_password("123"),
     ))
     chat = await chat_gateway.save_chat(Chat(
         id=None,
@@ -37,23 +37,23 @@ async def test_new_message_event(
         json={
             "username": user1.username,
             "password": "123",
-        }
+        },
     )
 
     assert response.status_code == 200
 
     token = response.cookies["token"].strip('"')
     headers = {
-        "Cookie": f"token={token}"
+        "Cookie": f"token={token}",
     }
     with client.websocket_connect(r"ws://localhost:8000/event/listen", headers=headers) as websocket:
-        
+
         response = client.post(
             r"/message",
             json={
                 "chat_id": chat.id,
                 "text": "MessageText",
-            }
+            },
         )
 
         assert response.status_code == 200
@@ -62,5 +62,5 @@ async def test_new_message_event(
 
         assert websocket.receive_json() == {
             "event": "new_message",
-            "message": response_json
+            "message": response_json,
         }

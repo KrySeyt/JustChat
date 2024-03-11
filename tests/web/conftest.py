@@ -47,8 +47,7 @@ def mongo_uri() -> str:
 def mongo_db(mongo_uri) -> AsyncIOMotorDatabase:
     mongo_client = AsyncIOMotorClient(mongo_uri)
     _, mongo_db_name = mongo_uri.rsplit("/", maxsplit=1)
-    mongo_db = mongo_client[mongo_db_name]
-    return mongo_db
+    return mongo_client[mongo_db_name]
 
 
 @pytest_asyncio.fixture()
@@ -59,12 +58,12 @@ async def psycopg_conn(postgres_uri) -> AsyncConnection[Any]:
 
 @pytest.fixture()
 def transaction_manager(psycopg_conn) -> PsycopgTransactionManager:
-    yield PsycopgTransactionManager(psycopg_conn)
+    return PsycopgTransactionManager(psycopg_conn)
 
 
 @pytest.fixture()
 def user_gateway(psycopg_conn) -> UserGateway:
-    yield RawSQLUserGateway(PsycopgSQLExecutor(psycopg_conn))
+    return RawSQLUserGateway(PsycopgSQLExecutor(psycopg_conn))
 
 
 @pytest.fixture()
@@ -74,7 +73,7 @@ def session_gateway() -> SessionGateway:
 
 @pytest.fixture()
 def chat_gateway(psycopg_conn) -> ChatGateway:
-    yield RawSQLChatGateway(PsycopgSQLExecutor(psycopg_conn))
+    return RawSQLChatGateway(PsycopgSQLExecutor(psycopg_conn))
 
 
 @pytest.fixture()
@@ -90,6 +89,4 @@ def password_provider() -> PasswordProvider:
 @pytest.fixture()
 def client() -> TestClient:
     app = create_app()
-
-    client = TestClient(app)
-    return client
+    return TestClient(app)

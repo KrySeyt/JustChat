@@ -9,12 +9,12 @@ async def test_create_chat(client, chat_gateway, user_gateway, transaction_manag
     user1 = await user_gateway.save_user(User(
         id=None,
         username="Username1",
-        hashed_password="123"
+        hashed_password="123",
     ))
     user2 = await user_gateway.save_user(User(
         id=None,
         username="Username2",
-        hashed_password="123"
+        hashed_password="123",
     ))
 
     await transaction_manager.commit()
@@ -24,7 +24,7 @@ async def test_create_chat(client, chat_gateway, user_gateway, transaction_manag
         json={
             "title": "Title",
             "user_ids": [user1.id, user2.id],
-        }
+        },
     )
     assert response.status_code == 200
     response_json = response.json()
@@ -45,17 +45,17 @@ async def test_create_chat_with_random_user(
         chat_gateway,
         user_gateway,
         password_provider,
-        transaction_manager
+        transaction_manager,
 ):
     await user_gateway.save_user(User(
         id=None,
         username="create_chat_with_random_user",
-        hashed_password=password_provider.hash_password("123")
+        hashed_password=password_provider.hash_password("123"),
     ))
     await user_gateway.save_user(User(
         id=None,
         username="Username2",
-        hashed_password=password_provider.hash_password("123")
+        hashed_password=password_provider.hash_password("123"),
     ))
 
     await transaction_manager.commit()
@@ -64,8 +64,8 @@ async def test_create_chat_with_random_user(
         r"/user/login",
         json={
             "username": "create_chat_with_random_user",
-            "password": "123"
-        }
+            "password": "123",
+        },
     )
 
     assert response.status_code == 200
@@ -74,8 +74,8 @@ async def test_create_chat_with_random_user(
     response = client.post(
         r"/chat/random",
         json={
-            "title": "Title"
-        }
+            "title": "Title",
+        },
     )
 
     assert response.status_code == 200
@@ -97,12 +97,12 @@ async def test_get_chat_by_id(client, chat_gateway, user_gateway, transaction_ma
     user1 = await user_gateway.save_user(User(
         id=None,
         username="Username1",
-        hashed_password="123"
+        hashed_password="123",
     ))
     user2 = await user_gateway.save_user(User(
         id=None,
         username="Username2",
-        hashed_password="123"
+        hashed_password="123",
     ))
     chat = await chat_gateway.save_chat(Chat(
         id=None,
@@ -128,12 +128,12 @@ async def test_delete_chat_by_id(client, chat_gateway, user_gateway, transaction
     user1 = await user_gateway.save_user(User(
         id=None,
         username="Username1",
-        hashed_password="123"
+        hashed_password="123",
     ))
     user2 = await user_gateway.save_user(User(
         id=None,
         username="Username2",
-        hashed_password="123"
+        hashed_password="123",
     ))
     chat = await chat_gateway.save_chat(Chat(
         id=None,

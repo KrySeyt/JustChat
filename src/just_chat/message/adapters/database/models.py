@@ -11,6 +11,7 @@ class Message(Base):
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
     text: Mapped[str]
+    image_url: Mapped[str] = mapped_column(nullable=True)
 
     author_id: Mapped[int] = mapped_column(ForeignKey("user.id"))
     author: Mapped[User] = relationship()

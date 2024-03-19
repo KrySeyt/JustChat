@@ -41,6 +41,7 @@ lint.ignore = [
     "S101",
     "S608",
     "SIM117",
+    "S105",
 ]
 
 [tool.ruff.lint.per-file-ignores]
@@ -67,7 +68,7 @@ requires-python = ">=3.11"
 dependencies = [
     "fastapi",
     "passlib[argon2]",
-    "types-passlib",
+    "aiohttp",
     "uvicorn",
     "gunicorn",
     "websockets",
@@ -76,6 +77,7 @@ dependencies = [
     "sqlalchemy",
     "alembic",
     "motor",
+    "minio",
 ]
 
 [project.optional-dependencies]
@@ -83,10 +85,10 @@ test = [
     "pytest",
     "pytest-asyncio",
     "pytest-cov",
-    "httpx"
+    "httpx",
 ]
 lint = [
-    "ruff"
+    "ruff",
 ]
 migrations = [
     "alembic"
@@ -94,10 +96,10 @@ migrations = [
 types-checking = [
     "mypy",
     "types-passlib",
-    "motor-stubs"
+    "motor-stubs",
 ]
 dev = [
-    "just_chat[test, lint, types-checking]"
+    "just_chat[test, lint, types-checking]",
 ]
 
 [project.urls]

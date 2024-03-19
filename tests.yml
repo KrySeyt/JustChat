@@ -9,14 +9,19 @@ services:
       - ./alembic:/just_chat/alembic
       - ./tests:/just_chat/tests
     environment:
-      - POSTGRES_URI=postgresql://postgres:postgres@postgres:5432/postgres
-      - MONGO_URI=mongodb://mongo:27017/just_chat
+        - POSTGRES_DSN=postgresql://postgres:postgres@postgres:5432/postgres
+        - MONGO_DSN=mongodb://mongo:27017/just_chat
+        - MINIO_ENDPOINT=minio:9000
+        - MINIO_ACCESS_KEY=test
+        - MINIO_SECRET_KEY=testsecret
     ports:
-      - "8000:8000"
+        - "8000:8000"
     depends_on:
       postgres:
         condition: service_healthy
       mongo:
+        condition: service_started
+      minio:
         condition: service_started
     entrypoint: bash -c "alembic upgrade head && pytest -vvv"
 
@@ -32,6 +37,21 @@ services:
       retries: 5
 
   mongo:
-    image: mongo
+    image: mongo:latest
     restart: always
+
+  minio:
+    hostname: minio
+    image: quay.io/minio/minio:latest
+    environment:
+      - MINIO_ACCESS_KEY=test
+      - MINIO_SECRET_KEY=testsecret
+    volumes:
+      - ./minio/data:/data
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    entrypoint: bash -c "
+      mkdir -p /data/images &&
+      minio server --console-address ":9001" /data"
 

@@ -1,4 +1,3 @@
-from os import getenv
 from typing import Any
 
 import passlib.hash
@@ -14,6 +13,7 @@ from just_chat.common.adapters.database.postgres_sql_executor import PsycopgSQLE
 from just_chat.common.adapters.database.postgres_transaction_manager import PsycopgTransactionManager
 from just_chat.common.adapters.security.password_provider import HashingPasswordProvider
 from just_chat.common.application.password_provider import PasswordProvider
+from just_chat.main.config import MongoSettings, PostgresSettings, get_mongo_settings, get_postgres_settings
 from just_chat.main.web import create_app
 from just_chat.message.adapters.database.mongo_message_gateway import MongoMessageGateway
 from just_chat.message.application.gateways.message_gateway import MessageGateway
@@ -24,35 +24,25 @@ from just_chat.user.application.gateways.user_gateway import UserGateway
 
 
 @pytest.fixture()
-def postgres_uri() -> str:
-    postgres_uri = getenv("POSTGRES_URI")
-
-    if postgres_uri is None:
-        raise ValueError("POSTGRES_URI is None")
-
-    return postgres_uri
+def postgres_settings() -> PostgresSettings:
+    return get_postgres_settings()
 
 
 @pytest.fixture()
-def mongo_uri() -> str:
-    mongo_uri = getenv("MONGO_URI")
-
-    if mongo_uri is None:
-        raise ValueError("MONGO_URI is None")
-
-    return mongo_uri
+def mongo_settings() -> MongoSettings:
+    return get_mongo_settings()
 
 
 @pytest.fixture()
-def mongo_db(mongo_uri) -> AsyncIOMotorDatabase:
-    mongo_client = AsyncIOMotorClient(mongo_uri)
-    _, mongo_db_name = mongo_uri.rsplit("/", maxsplit=1)
+def mongo_db(mongo_settings) -> AsyncIOMotorDatabase:
+    mongo_client = AsyncIOMotorClient(mongo_settings.dsn)
+    _, mongo_db_name = mongo_settings.dsn.rsplit("/", maxsplit=1)
     return mongo_client[mongo_db_name]
 
 
 @pytest_asyncio.fixture()
-async def psycopg_conn(postgres_uri) -> AsyncConnection[Any]:
-    async with await AsyncConnection.connect(postgres_uri) as conn:
+async def psycopg_conn(postgres_settings) -> AsyncConnection[Any]:
+    async with await AsyncConnection.connect(postgres_settings.dsn) as conn:
         yield conn
 
 

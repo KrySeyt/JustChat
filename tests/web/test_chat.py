@@ -8,12 +8,12 @@ from just_chat.user.domain.models.user import User
 async def test_create_chat(client, chat_gateway, user_gateway, transaction_manager):
     user1 = await user_gateway.save_user(User(
         id=None,
-        username="Username1",
+        username="create_chat1",
         hashed_password="123",
     ))
     user2 = await user_gateway.save_user(User(
         id=None,
-        username="Username2",
+        username="create_chat2",
         hashed_password="123",
     ))
 
@@ -47,14 +47,14 @@ async def test_create_chat_with_random_user(
         password_provider,
         transaction_manager,
 ):
-    await user_gateway.save_user(User(
+    user = await user_gateway.save_user(User(
         id=None,
-        username="create_chat_with_random_user",
+        username="create_chat_with_random_user1",
         hashed_password=password_provider.hash_password("123"),
     ))
     await user_gateway.save_user(User(
         id=None,
-        username="Username2",
+        username="create_chat_with_random_user2",
         hashed_password=password_provider.hash_password("123"),
     ))
 
@@ -63,7 +63,7 @@ async def test_create_chat_with_random_user(
     response = client.post(
         r"/user/login",
         json={
-            "username": "create_chat_with_random_user",
+            "username": user.username,
             "password": "123",
         },
     )
@@ -96,12 +96,12 @@ async def test_create_chat_with_random_user(
 async def test_get_chat_by_id(client, chat_gateway, user_gateway, transaction_manager):
     user1 = await user_gateway.save_user(User(
         id=None,
-        username="Username1",
+        username="get_chat_by_id1",
         hashed_password="123",
     ))
     user2 = await user_gateway.save_user(User(
         id=None,
-        username="Username2",
+        username="get_chat_by_id2",
         hashed_password="123",
     ))
     chat = await chat_gateway.save_chat(Chat(
@@ -127,12 +127,12 @@ async def test_get_chat_by_id(client, chat_gateway, user_gateway, transaction_ma
 async def test_delete_chat_by_id(client, chat_gateway, user_gateway, transaction_manager):
     user1 = await user_gateway.save_user(User(
         id=None,
-        username="Username1",
+        username="delete_chat_by_id1",
         hashed_password="123",
     ))
     user2 = await user_gateway.save_user(User(
         id=None,
-        username="Username2",
+        username="delete_chat_by_id2",
         hashed_password="123",
     ))
     chat = await chat_gateway.save_chat(Chat(

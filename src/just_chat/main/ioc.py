@@ -1,6 +1,8 @@
 from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
 
+import aiohttp
+from minio import Minio
 from motor.motor_asyncio import AsyncIOMotorDatabase
 from passlib.handlers.argon2 import argon2
 from psycopg import AsyncConnection
@@ -13,6 +15,7 @@ from just_chat.chat.application.get_chat import GetChat
 from just_chat.chat.domain.services.chat import ChatService
 from just_chat.chat.domain.services.chat_access import ChatAccessService
 from just_chat.chat.presentation.interactor_factory import ChatInteractorFactory
+from just_chat.common.adapters.database.minio_file_gateway import MinioFileGateway
 from just_chat.common.adapters.database.postgres_sql_executor import PsycopgSQLExecutor
 from just_chat.common.adapters.database.postgres_transaction_manager import PsycopgTransactionManager
 from just_chat.common.adapters.database.transaction_manager_stub import TransactionManagerStub
@@ -122,22 +125,26 @@ class UserIoC(UserInteractorFactory):
 
 
 class MessageIoC(MessageInteractorFactory):
-    def __init__(self, postgres_uri: str, mongo_db: AsyncIOMotorDatabase) -> None:
+    def __init__(self, postgres_uri: str, mongo_db: AsyncIOMotorDatabase, minio_client: Minio) -> None:
+        self._minio_client = minio_client
+        self._mongo_db = mongo_db
         self._postgres_uri = postgres_uri
-        self._message_gateway = MongoMessageGateway(mongo_db)
-        self._event_gateway = WSEventGateway()
 
     @asynccontextmanager
     async def create_message(self, id_provider: IdProvider) -> AsyncGenerator[CreateMessage, None]:
-        async with await AsyncConnection.connect(self._postgres_uri) as conn:
+        async with (
+            await AsyncConnection.connect(self._postgres_uri) as conn,
+            aiohttp.ClientSession() as session,
+        ):
             yield CreateMessage(
                 ChatAccessService(),
                 RawSQLChatGateway(PsycopgSQLExecutor(conn)),
                 EventService(),
-                self._event_gateway,
-                self._message_gateway,
-                id_provider,
+                WSEventGateway(),
+                MongoMessageGateway(self._mongo_db),
+                id_provider=id_provider,
                 transaction_manager=PsycopgTransactionManager(conn),
+                file_gateway=MinioFileGateway(self._minio_client, session),
             )
 
     @asynccontextmanager
@@ -145,7 +152,7 @@ class MessageIoC(MessageInteractorFactory):
         async with await AsyncConnection.connect(self._postgres_uri) as conn:
             yield GetChatMessages(
                 ChatAccessService(),
-                self._message_gateway,
+                MongoMessageGateway(self._mongo_db),
                 RawSQLChatGateway(PsycopgSQLExecutor(conn)),
                 id_provider,
             )

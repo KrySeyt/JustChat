@@ -3,6 +3,7 @@ from dataclasses import dataclass
 from just_chat.chat.application.gateways.chat_gateway import ChatGateway
 from just_chat.chat.domain.models.chat import ChatId
 from just_chat.chat.domain.services.chat_access import ChatAccessService
+from just_chat.common.application.image_gateway import FileGateway
 from just_chat.common.application.interactor import Interactor
 from just_chat.common.application.transaction_manager import TransactionManager
 from just_chat.event.application.gateways.event_gateway import EventGateway
@@ -16,6 +17,7 @@ from just_chat.user.application.id_provider import IdProvider
 class NewMessageDTO:
     text: str
     chat_id: ChatId
+    image_url: str | None = None
 
 
 class CreateMessage(Interactor[NewMessageDTO, Message]):
@@ -26,6 +28,7 @@ class CreateMessage(Interactor[NewMessageDTO, Message]):
             event_service: EventService,
             event_gateway: EventGateway,
             message_gateway: MessageGateway,
+            file_gateway: FileGateway,
             id_provider: IdProvider,
             transaction_manager: TransactionManager,
     ) -> None:
@@ -34,6 +37,7 @@ class CreateMessage(Interactor[NewMessageDTO, Message]):
         self._event_service = event_service
         self._event_gateway = event_gateway
         self._message_gateway = message_gateway
+        self._image_gateway = file_gateway
         self._id_provider = id_provider
         self._transaction_manager = transaction_manager
 
@@ -43,6 +47,14 @@ class CreateMessage(Interactor[NewMessageDTO, Message]):
 
         self._chat_access_service.ensure_user_can_write_to_chat(chat, user_id)
 
+        if data.image_url is not None:
+            image_url = await self._image_gateway.save_user_image_from_url(
+                user_id=user_id,
+                url=data.image_url,
+            )
+        else:
+            image_url = None
+
         message = await self._message_gateway.save_message(
             Message(
                 id=None,
@@ -50,6 +62,7 @@ class CreateMessage(Interactor[NewMessageDTO, Message]):
                 chat_id=data.chat_id,
                 author_id=user_id,
                 owner_id=user_id,
+                image_url=image_url,
             ),
         )
 

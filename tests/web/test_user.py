@@ -28,7 +28,7 @@ async def test_create_user(client, user_gateway):
 async def test_get_user_by_id(client, user_gateway, transaction_manager):
     user = await user_gateway.save_user(User(
         id=None,
-        username="Username",
+        username="get_user_by_id",
         hashed_password="123",
     ))
 

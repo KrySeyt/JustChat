@@ -12,7 +12,7 @@ from just_chat.common.adapters.database.models import Base
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
 config = context.config
-db_url = getenv('POSTGRES_URI')
+db_url = getenv('POSTGRES_DSN')
 l, r = db_url.split("://")
 config.set_main_option('sqlalchemy.url', l + "+psycopg://" + r)
 

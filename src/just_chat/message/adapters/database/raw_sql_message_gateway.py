@@ -18,14 +18,16 @@ class RawSQLMessageGateway(MessageGateway):
                 text,
                 author_id,
                 owner_id,
-                chat_id
+                chat_id,
+                image_url
             )
             VALUES (
                 {message_id_placeholder},
                 :text,
                 :author_id,
                 :owner_id,
-                :chat_id
+                :chat_id,
+                :image_url
             )
             ON CONFLICT (id)
             DO UPDATE
@@ -39,7 +41,8 @@ class RawSQLMessageGateway(MessageGateway):
             text,
             author_id,
             owner_id,
-            chat_id
+            chat_id,
+            image_url
         """
 
         values: dict[str, Any] = {
@@ -48,6 +51,7 @@ class RawSQLMessageGateway(MessageGateway):
             "author_id": message.author_id,
             "owner_id": message.owner_id,
             "chat_id": message.chat_id,
+            "image_url": message.image_url,
         }
 
         messages_datas = await self._sql_executor.execute(q_save_message, values)
@@ -62,7 +66,8 @@ class RawSQLMessageGateway(MessageGateway):
         message.text,
         message.author_id,
         message.owner_id,
-        message.chat_id
+        message.chat_id,
+        message.image_url
         FROM message
         WHERE message.id = :message_id
         """
@@ -85,7 +90,8 @@ class RawSQLMessageGateway(MessageGateway):
         message.text,
         message.author_id,
         message.owner_id,
-        message.chat_id
+        message.chat_id,
+        message.image_url
         FROM message
         WHERE message.chat_id = :chat_id
         """

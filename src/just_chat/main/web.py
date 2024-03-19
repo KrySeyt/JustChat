@@ -1,8 +1,8 @@
 from collections.abc import Callable
-from os import getenv
 from typing import TypeVar
 
 from fastapi import FastAPI
+from minio import Minio
 from motor.motor_asyncio import AsyncIOMotorClient
 from passlib.handlers.argon2 import argon2
 
@@ -12,6 +12,7 @@ from just_chat.common.adapters.security.password_provider import HashingPassword
 from just_chat.common.application.password_provider import PasswordProvider
 from just_chat.event.presentation.interactor_factory import EventInteractorFactory
 from just_chat.event.presentation.web import event_router
+from just_chat.main.config import get_minio_settings, get_mongo_settings, get_postgres_settings
 from just_chat.main.ioc import ChatIoC, EventIoC, MessageIoC, UserIoC
 from just_chat.message.presentation.interactor_factory import MessageInteractorFactory
 from just_chat.message.presentation.web import message_router
@@ -28,23 +29,24 @@ def singleton(dependency: DependencyT) -> Callable[[], DependencyT]:
 
 
 def create_app() -> FastAPI:
-    postgres_uri = getenv("POSTGRES_URI")
+    postgres_settings = get_postgres_settings()
+    mongo_settings = get_mongo_settings()
+    minio_settings = get_minio_settings()
 
-    if postgres_uri is None:
-        raise ValueError("POSTGRES_URI is None")
-
-    mongo_uri = getenv("MONGO_URI")
-
-    if mongo_uri is None:
-        raise ValueError("MONGO_URI is None")
-
-    mongo_client = AsyncIOMotorClient(mongo_uri)
-    _, mongo_db_name = mongo_uri.rsplit("/", maxsplit=1)
+    mongo_client = AsyncIOMotorClient(mongo_settings.dsn)
+    _, mongo_db_name = mongo_settings.dsn.rsplit("/", maxsplit=1)
     mongo_db = mongo_client[mongo_db_name]
 
-    chat_ioc = ChatIoC(postgres_uri)
-    user_ioc = UserIoC(postgres_uri)
-    message_ioc = MessageIoC(postgres_uri, mongo_db)
+    minio = Minio(
+        minio_settings.endpoint,
+        access_key=minio_settings.access_key,
+        secret_key=minio_settings.secret_key,
+        secure=False,
+    )
+
+    chat_ioc = ChatIoC(postgres_settings.dsn)
+    user_ioc = UserIoC(postgres_settings.dsn)
+    message_ioc = MessageIoC(postgres_settings.dsn, mongo_db, minio)
     event_ioc = EventIoC(mongo_db)
 
     app = FastAPI()

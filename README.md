@@ -4,7 +4,12 @@ Just some chat example with Clean Architecture and more
 # Setup
 - Copy repo
 ```shell
-git clone git@github.com:KrySeyt/MillionAgentsHardTestTask.git
+git clone git@github.com:KrySeyt/JustChat.git
+```
+
+- Go to directory
+```
+cd JustChat
 ```
 
 - Run with Docker

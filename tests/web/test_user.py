@@ -1,7 +1,7 @@
 import pytest
 
-from just_chat.user.application.gateways.session_gateway import SessionToken
-from just_chat.user.domain.models.user import User
+from just_chat.user.application.interfaces.session_gateway import SessionToken
+from just_chat.user.domain.user import User
 
 
 @pytest.mark.asyncio

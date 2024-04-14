@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 
-from just_chat.message.domain.models.message import FileUrl
-from just_chat.user.domain.models.user import UserId
+from just_chat.message.domain.message import FileUrl
+from just_chat.user.domain.user import UserId
 
 
 class FileGateway(ABC):

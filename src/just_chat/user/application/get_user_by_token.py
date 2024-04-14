@@ -1,6 +1,6 @@
 from just_chat.common.application.interactor import Interactor
-from just_chat.user.application.gateways.session_gateway import SessionGateway, SessionToken
-from just_chat.user.domain.models.user import UserId
+from just_chat.user.application.interfaces.session_gateway import SessionGateway, SessionToken
+from just_chat.user.domain.user import UserId
 
 
 class GetUserIdByToken(Interactor[SessionToken, UserId]):

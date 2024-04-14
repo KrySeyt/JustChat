@@ -1,7 +1,6 @@
-from just_chat.chat.domain.models.chat import ChatId
-from just_chat.message.domain.models.message import Message, MessageId
-from just_chat.message.domain.services.message import MessageService
-from just_chat.user.domain.models.user import UserId
+from just_chat.chat.domain.chat import ChatId
+from just_chat.message.domain.message import Message, MessageId, MessageService
+from just_chat.user.domain.user import UserId
 
 
 def test_create_message():

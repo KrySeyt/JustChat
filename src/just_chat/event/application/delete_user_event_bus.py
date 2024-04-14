@@ -1,7 +1,7 @@
 from just_chat.common.application.interactor import Interactor
 from just_chat.common.application.transaction_manager import TransactionManager
-from just_chat.event.application.event_bus import EventBus
-from just_chat.event.application.gateways.event_gateway import EventGateway
+from just_chat.event.application.interfaces.event_bus import EventBus
+from just_chat.event.application.interfaces.event_gateway import EventGateway
 from just_chat.user.application.id_provider import IdProvider
 
 

@@ -5,11 +5,10 @@ import pytest
 
 from just_chat.chat.application.create_chat import CreateChat, NewChatDTO
 from just_chat.chat.application.delete_chat import DeleteChat
-from just_chat.chat.application.gateways.chat_gateway import ChatGateway, ChatNotFoundError
+from just_chat.chat.application.interfaces.chat_gateway import ChatGateway, ChatNotFoundError
 from just_chat.chat.application.get_chat import GetChat
-from just_chat.chat.domain.models.chat import Chat, ChatId
-from just_chat.chat.domain.services.chat import ChatService
-from just_chat.user.domain.models.user import UserId
+from just_chat.chat.domain.chat import Chat, ChatId, ChatService
+from just_chat.user.domain.user import UserId
 
 CHAT_ID = ChatId(1)
 CHAT_TITLE = "Title"

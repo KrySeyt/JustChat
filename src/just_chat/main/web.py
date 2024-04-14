@@ -6,20 +6,20 @@ from minio import Minio
 from motor.motor_asyncio import AsyncIOMotorClient
 from passlib.handlers.argon2 import argon2
 
-from just_chat.chat.presentation.interactor_factory import ChatInteractorFactory
-from just_chat.chat.presentation.web import chat_router
-from just_chat.common.adapters.security.password_provider import HashingPasswordProvider
+from just_chat.chat.adapters.interactor_factory import ChatInteractorFactory
+from just_chat.chat.external.web_api import chat_router
 from just_chat.common.application.password_provider import PasswordProvider
-from just_chat.event.presentation.interactor_factory import EventInteractorFactory
-from just_chat.event.presentation.web import event_router
+from just_chat.common.external.security.password_provider import HashingPasswordProvider
+from just_chat.event.adapters.interactor_factory import EventInteractorFactory
+from just_chat.event.external.web import event_router
 from just_chat.main.config import get_minio_settings, get_mongo_settings, get_postgres_settings
 from just_chat.main.ioc import ChatIoC, EventIoC, MessageIoC, UserIoC
-from just_chat.message.presentation.interactor_factory import MessageInteractorFactory
-from just_chat.message.presentation.web import message_router
+from just_chat.message.adapters.interactor_factory import MessageInteractorFactory
+from just_chat.message.external.web import message_router
+from just_chat.user.adapters.interactor_factory import UserInteractorFactory
 from just_chat.user.application.id_provider import IdProvider
-from just_chat.user.presentation.interactor_factory import UserInteractorFactory
-from just_chat.user.presentation.web import user_router
-from just_chat.user.presentation.web.dependencies.id_provider import get_session_id_provider
+from just_chat.user.external.web import user_router
+from just_chat.user.external.web.dependencies.id_provider import get_session_id_provider
 
 DependencyT = TypeVar("DependencyT")
 

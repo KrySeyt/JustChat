@@ -1,9 +1,9 @@
-from just_chat.chat.application.gateways.chat_gateway import ChatGateway
-from just_chat.chat.domain.models.chat import ChatId
-from just_chat.chat.domain.services.chat_access import ChatAccessService
+from just_chat.chat.application.interfaces.chat_gateway import ChatGateway
+from just_chat.chat.domain.chat import ChatId
+from just_chat.chat.domain.chat_access import ChatAccessService
 from just_chat.common.application.interactor import Interactor
-from just_chat.message.application.gateways.message_gateway import MessageGateway
-from just_chat.message.domain.models.message import Message
+from just_chat.message.application.interfaces.message_gateway import MessageGateway
+from just_chat.message.domain.message import Message
 from just_chat.user.application.id_provider import IdProvider
 
 

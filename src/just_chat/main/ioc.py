@@ -7,37 +7,37 @@ from motor.motor_asyncio import AsyncIOMotorDatabase
 from passlib.handlers.argon2 import argon2
 from psycopg import AsyncConnection
 
-from just_chat.chat.adapters.database.raw_sql_chat_gateway import RawSQLChatGateway
+from just_chat.chat.adapters.interactor_factory import ChatInteractorFactory
+from just_chat.chat.adapters.raw_sql_chat_gateway import RawSQLChatGateway
 from just_chat.chat.application.create_chat import CreateChat
 from just_chat.chat.application.create_chat_with_random_user import CreateChatWithRandomUser
 from just_chat.chat.application.delete_chat import DeleteChat
 from just_chat.chat.application.get_chat import GetChat
-from just_chat.chat.domain.services.chat import ChatService
-from just_chat.chat.domain.services.chat_access import ChatAccessService
-from just_chat.chat.presentation.interactor_factory import ChatInteractorFactory
-from just_chat.common.adapters.database.minio_file_gateway import MinioFileGateway
-from just_chat.common.adapters.database.postgres_sql_executor import PsycopgSQLExecutor
-from just_chat.common.adapters.database.postgres_transaction_manager import PsycopgTransactionManager
-from just_chat.common.adapters.database.transaction_manager_stub import TransactionManagerStub
-from just_chat.common.adapters.security.password_provider import HashingPasswordProvider
-from just_chat.event.adapters.event_bus.websocket_event_gateway import WSEventGateway
+from just_chat.chat.domain.chat import ChatService
+from just_chat.chat.domain.chat_access import ChatAccessService
+from just_chat.common.external.database.minio_file_gateway import MinioFileGateway
+from just_chat.common.external.database.postgres_sql_executor import PsycopgSQLExecutor
+from just_chat.common.external.database.postgres_transaction_manager import PsycopgTransactionManager
+from just_chat.common.external.database.transaction_manager_stub import TransactionManagerStub
+from just_chat.common.external.security.password_provider import HashingPasswordProvider
+from just_chat.event.adapters.interactor_factory import EventInteractorFactory
 from just_chat.event.application.add_user_event_bus import AddUserEventBus
 from just_chat.event.application.delete_user_event_bus import DeleteUserEventBus
-from just_chat.event.domain.services.event import EventService
-from just_chat.event.presentation.interactor_factory import EventInteractorFactory
-from just_chat.message.adapters.database.mongo_message_gateway import MongoMessageGateway
+from just_chat.event.domain.event import EventService
+from just_chat.event.external.database.ram_event_gateway import RAMEventGateway
+from just_chat.message.adapters.interactor_factory import MessageInteractorFactory
 from just_chat.message.application.create_message import CreateMessage
 from just_chat.message.application.get_chat_messages import GetChatMessages
-from just_chat.message.presentation.interactor_factory import MessageInteractorFactory
-from just_chat.user.adapters.database.ram_session_gateway import RAMSessionGateway
-from just_chat.user.adapters.database.raw_sql_user_gateway import RawSQLUserGateway
+from just_chat.message.external.database.mongo_message_gateway import MongoMessageGateway
+from just_chat.user.adapters.interactor_factory import UserInteractorFactory
+from just_chat.user.adapters.raw_sql_user_gateway import RawSQLUserGateway
 from just_chat.user.application.create_user import CreateUser
 from just_chat.user.application.get_user_by_id import GetUserById
 from just_chat.user.application.get_user_by_token import GetUserIdByToken
 from just_chat.user.application.id_provider import IdProvider
 from just_chat.user.application.login import Login
-from just_chat.user.domain.services.user import UserService
-from just_chat.user.presentation.interactor_factory import UserInteractorFactory
+from just_chat.user.domain.user import UserService
+from just_chat.user.external.database.ram_session_gateway import RAMSessionGateway
 
 
 class ChatIoC(ChatInteractorFactory):
@@ -140,7 +140,7 @@ class MessageIoC(MessageInteractorFactory):
                 ChatAccessService(),
                 RawSQLChatGateway(PsycopgSQLExecutor(conn)),
                 EventService(),
-                WSEventGateway(),
+                RAMEventGateway(),
                 MongoMessageGateway(self._mongo_db),
                 id_provider=id_provider,
                 transaction_manager=PsycopgTransactionManager(conn),
@@ -161,7 +161,7 @@ class MessageIoC(MessageInteractorFactory):
 class EventIoC(EventInteractorFactory):
     def __init__(self, mongo_db: AsyncIOMotorDatabase) -> None:
         self._message_gateway = MongoMessageGateway(mongo_db)
-        self._event_gateway = WSEventGateway()
+        self._event_gateway = RAMEventGateway()
 
     @asynccontextmanager
     async def add_user_event_bus(self, id_provider: IdProvider) -> AsyncGenerator[AddUserEventBus, None]:

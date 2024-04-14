@@ -1,9 +1,8 @@
 from dataclasses import dataclass
 
 from just_chat.common.application.interactor import Interactor
-from just_chat.user.application.gateways.user_gateway import UserGateway
-from just_chat.user.domain.models.user import UserId
-from just_chat.user.domain.services.user import UserService
+from just_chat.user.application.interfaces.user_gateway import UserGateway
+from just_chat.user.domain.user import UserId, UserService
 
 
 @dataclass

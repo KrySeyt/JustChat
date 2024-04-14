@@ -3,9 +3,9 @@ from dataclasses import asdict
 import aiohttp
 import pytest
 
-from just_chat.chat.domain.models.chat import Chat
-from just_chat.message.domain.models.message import Message
-from just_chat.user.domain.models.user import User
+from just_chat.chat.domain.chat import Chat
+from just_chat.message.domain.message import Message
+from just_chat.user.domain.user import User
 
 
 @pytest.mark.asyncio

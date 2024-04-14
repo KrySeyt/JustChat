@@ -4,9 +4,9 @@ from dataclasses import dataclass
 from just_chat.common.application.interactor import Interactor
 from just_chat.common.application.password_provider import PasswordProvider
 from just_chat.common.application.transaction_manager import TransactionManager
-from just_chat.user.application.gateways.session_gateway import SessionGateway, SessionToken
-from just_chat.user.application.gateways.user_gateway import UserGateway, UserNotFoundError
-from just_chat.user.domain.services.user import UserService
+from just_chat.user.application.interfaces.session_gateway import SessionGateway, SessionToken
+from just_chat.user.application.interfaces.user_gateway import UserGateway, UserNotFoundError
+from just_chat.user.domain.user import UserService
 
 
 class WrongCredentialsError(Exception):

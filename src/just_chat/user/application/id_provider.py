@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-from just_chat.user.domain.models.user import UserId
+from just_chat.user.domain.user import UserId
 
 
 class IdProvider(ABC):

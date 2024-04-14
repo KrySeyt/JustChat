@@ -1,5 +1,5 @@
-from just_chat.chat.application.gateways.chat_gateway import ChatGateway
-from just_chat.chat.domain.models.chat import Chat, ChatId
+from just_chat.chat.application.interfaces.chat_gateway import ChatGateway
+from just_chat.chat.domain.chat import Chat, ChatId
 from just_chat.common.application.interactor import Interactor
 
 

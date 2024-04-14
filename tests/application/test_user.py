@@ -4,12 +4,11 @@ import pytest
 
 from just_chat.common.application.password_provider import PasswordProvider
 from just_chat.user.application.create_user import CreateUser, NewUserDTO
-from just_chat.user.application.gateways.session_gateway import SessionGateway, SessionNotFoundError
-from just_chat.user.application.gateways.user_gateway import UserGateway
+from just_chat.user.application.interfaces.session_gateway import SessionGateway, SessionNotFoundError
+from just_chat.user.application.interfaces.user_gateway import UserGateway
 from just_chat.user.application.get_user_by_id import GetUserById
 from just_chat.user.application.login import Login, LoginDTO
-from just_chat.user.domain.models.user import User, UserId
-from just_chat.user.domain.services.user import UserService
+from just_chat.user.domain.user import User, UserId, UserService
 
 USER_ID = UserId(1)
 USERNAME = "username"

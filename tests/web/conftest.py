@@ -7,20 +7,20 @@ from fastapi.testclient import TestClient
 from motor.motor_asyncio import AsyncIOMotorClient, AsyncIOMotorDatabase
 from psycopg import AsyncConnection
 
-from just_chat.chat.adapters.database.raw_sql_chat_gateway import RawSQLChatGateway
-from just_chat.chat.application.gateways.chat_gateway import ChatGateway
-from just_chat.common.adapters.database.postgres_sql_executor import PsycopgSQLExecutor
-from just_chat.common.adapters.database.postgres_transaction_manager import PsycopgTransactionManager
-from just_chat.common.adapters.security.password_provider import HashingPasswordProvider
+from just_chat.chat.adapters.raw_sql_chat_gateway import RawSQLChatGateway
+from just_chat.chat.application.interfaces.chat_gateway import ChatGateway
+from just_chat.common.external.database.postgres_sql_executor import PsycopgSQLExecutor
+from just_chat.common.external.database.postgres_transaction_manager import PsycopgTransactionManager
+from just_chat.common.external.security.password_provider import HashingPasswordProvider
 from just_chat.common.application.password_provider import PasswordProvider
 from just_chat.main.config import MongoSettings, PostgresSettings, get_mongo_settings, get_postgres_settings
 from just_chat.main.web import create_app
-from just_chat.message.adapters.database.mongo_message_gateway import MongoMessageGateway
-from just_chat.message.application.gateways.message_gateway import MessageGateway
-from just_chat.user.adapters.database.ram_session_gateway import RAMSessionGateway
-from just_chat.user.adapters.database.raw_sql_user_gateway import RawSQLUserGateway
-from just_chat.user.application.gateways.session_gateway import SessionGateway
-from just_chat.user.application.gateways.user_gateway import UserGateway
+from just_chat.message.external.database.mongo_message_gateway import MongoMessageGateway
+from just_chat.message.application.interfaces.message_gateway import MessageGateway
+from just_chat.user.external.database.ram_session_gateway import RAMSessionGateway
+from just_chat.user.adapters.raw_sql_user_gateway import RawSQLUserGateway
+from just_chat.user.application.interfaces.session_gateway import SessionGateway
+from just_chat.user.application.interfaces.user_gateway import UserGateway
 
 
 @pytest.fixture()

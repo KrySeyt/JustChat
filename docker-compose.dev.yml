@@ -8,6 +8,7 @@ services:
       - ./src/:/just_chat/src:ro
       - ./alembic:/just_chat/alembic
     environment:
+      - RABBIT_URL=amqp://user:password@rabbit:5672/
       - POSTGRES_DSN=postgresql://postgres:postgres@postgres:5432/postgres
       - MONGO_DSN=mongodb://mongo:27017/just_chat
       - MINIO_ENDPOINT=192.168.0.216:9000
@@ -16,12 +17,28 @@ services:
     ports:
       - "8000:8000"
     depends_on:
+      notification_service:
+        condition: service_started
       postgres:
         condition: service_healthy
       mongo:
         condition: service_started
+      rabbit:
+        condition: service_healthy
       minio:
         condition: service_started
+
+  notification_service:
+    build:
+      dockerfile: Dockerfile.dev
+    volumes:
+      - ./src/:/just_chat/src:ro
+    environment:
+      - RABBIT_URL=amqp://user:password@rabbit:5672/
+    depends_on:
+      rabbit:
+        condition: service_healthy
+    entrypoint: python -m notification_service
 
   postgres:
     image: postgres:latest
@@ -32,7 +49,7 @@ services:
       test: ["CMD-SHELL", "pg_isready -d postgres -U postgres"]
       interval: 1s
       timeout: 1s
-      retries: 5
+      retries: 20
 
   mongo:
     image: mongo:latest
@@ -52,3 +69,14 @@ services:
       mkdir -p /data/images &&
       minio server --console-address ":9001" /data"
 
+  rabbit:
+    image: bitnami/rabbitmq
+    environment:
+      RABBITMQ_DEFAULT_PASS: password
+      RABBITMQ_DEFAULT_USER: user
+    healthcheck:
+      test: rabbitmq-diagnostics -q ping
+      interval: 30s
+      timeout: 30s
+      retries: 3
+    entrypoint: rabbitmq-server $@

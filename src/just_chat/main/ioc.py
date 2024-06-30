@@ -2,6 +2,7 @@ from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
 
 import aiohttp
+from faststream.rabbit import RabbitBroker
 from minio import Minio
 from motor.motor_asyncio import AsyncIOMotorDatabase
 from passlib.handlers.argon2 import argon2
@@ -24,6 +25,7 @@ from just_chat.event.adapters.interactor_factory import EventInteractorFactory
 from just_chat.event.application.add_user_event_bus import AddUserEventBus
 from just_chat.event.application.delete_user_event_bus import DeleteUserEventBus
 from just_chat.event.domain.event import EventService
+from just_chat.event.external.database.rabbit_event_gateway import RabbitEventGateway
 from just_chat.event.external.database.ram_event_gateway import RAMEventGateway
 from just_chat.message.adapters.interactor_factory import MessageInteractorFactory
 from just_chat.message.application.create_message import CreateMessage
@@ -125,22 +127,30 @@ class UserIoC(UserInteractorFactory):
 
 
 class MessageIoC(MessageInteractorFactory):
-    def __init__(self, postgres_uri: str, mongo_db: AsyncIOMotorDatabase, minio_client: Minio) -> None:
+    def __init__(
+            self,
+            postgres_url: str,
+            rabbit_url: str,
+            mongo_db: AsyncIOMotorDatabase,
+            minio_client: Minio,
+    ) -> None:
         self._minio_client = minio_client
         self._mongo_db = mongo_db
-        self._postgres_uri = postgres_uri
+        self._postgres_uri = postgres_url
+        self._rabbit_url = rabbit_url
 
     @asynccontextmanager
     async def create_message(self, id_provider: IdProvider) -> AsyncGenerator[CreateMessage, None]:
         async with (
             await AsyncConnection.connect(self._postgres_uri) as conn,
             aiohttp.ClientSession() as session,
+            RabbitBroker(self._rabbit_url) as rabbit_broker,
         ):
             yield CreateMessage(
                 ChatAccessService(),
                 RawSQLChatGateway(PsycopgSQLExecutor(conn)),
                 EventService(),
-                RAMEventGateway(),
+                RabbitEventGateway(rabbit_broker),
                 MongoMessageGateway(self._mongo_db),
                 id_provider=id_provider,
                 transaction_manager=PsycopgTransactionManager(conn),

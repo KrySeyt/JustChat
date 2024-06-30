@@ -1,7 +1,7 @@
 from collections.abc import Sequence
 from dataclasses import asdict
 
-from faststream.rabbit import RabbitBroker, RabbitExchange, ExchangeType
+from faststream.rabbit import ExchangeType, RabbitBroker, RabbitExchange
 
 from just_chat.event.application.interfaces.event_bus import EventBus
 from just_chat.event.application.interfaces.event_gateway import EventGateway

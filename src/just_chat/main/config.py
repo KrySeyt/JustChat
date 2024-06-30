@@ -1,6 +1,8 @@
 from dataclasses import dataclass
 from os import getenv
 
+RABBIT_URL_ENV = "RABBIT_URL"
+
 MINIO_ENDPOINT_ENV = "MINIO_ENDPOINT"
 MINIO_ACCESS_KEY_ENV = "MINIO_ACCESS_KEY"
 MINIO_SECRET_KEY_ENV = "MINIO_SECRET_KEY"
@@ -13,9 +15,15 @@ POSTGRES_DSN_ENV = "POSTGRES_DSN"
 class ConfigError(Exception):
     pass
 
+
 class EnvVarNotSetError(ConfigError):
     def __init__(self, env_var_name: str) -> None:
         super().__init__(f"Environment variable {env_var_name} is not set")
+
+
+@dataclass
+class RabbitSettings:
+    url: str
 
 
 @dataclass
@@ -61,4 +69,10 @@ def get_mongo_settings() -> MongoSettings:
 def get_postgres_settings() -> PostgresSettings:
     return PostgresSettings(
         dsn=load_str_env(POSTGRES_DSN_ENV),
+    )
+
+
+def get_rabbit_settings() -> RabbitSettings:
+    return RabbitSettings(
+        url=load_str_env(RABBIT_URL_ENV),
     )

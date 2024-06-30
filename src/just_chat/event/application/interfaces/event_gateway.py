@@ -16,5 +16,5 @@ class EventGateway(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    async def delete_user_event_bus(self, user_id: UserId) -> EventBus:
+    async def delete_user_event_bus(self, user_id: UserId) -> None:
         raise NotImplementedError

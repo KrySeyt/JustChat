@@ -5,7 +5,7 @@ from just_chat.event.application.interfaces.event_gateway import EventGateway
 from just_chat.user.application.id_provider import IdProvider
 
 
-class DeleteUserEventBus(Interactor[None, EventBus]):
+class DeleteUserEventBus(Interactor[None, None]):
     def __init__(
             self,
             event_gateway: EventGateway,
@@ -16,10 +16,8 @@ class DeleteUserEventBus(Interactor[None, EventBus]):
         self._id_provider = id_provider
         self._transaction_manager = transaction_manager
 
-    async def __call__(self, data: None = None) -> EventBus:
+    async def __call__(self, data: None = None) -> None:
         user_id = await self._id_provider.get_current_user_id()
-        user = await self._event_gateway.delete_user_event_bus(user_id)
+        await self._event_gateway.delete_user_event_bus(user_id)
 
         await self._transaction_manager.commit()
-
-        return user

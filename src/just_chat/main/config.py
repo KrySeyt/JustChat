@@ -1,6 +1,9 @@
 from dataclasses import dataclass
 from os import getenv
 
+REDIS_HOST_ENV = "REDIS_HOST"
+REDIS_PORT_ENV = "REDIS_PORT"
+
 RABBIT_URL_ENV = "RABBIT_URL"
 
 MINIO_ENDPOINT_ENV = "MINIO_ENDPOINT"
@@ -22,24 +25,30 @@ class EnvVarNotSetError(ConfigError):
 
 
 @dataclass
-class RabbitSettings:
+class RedisConfig:
+    host: str
+    port: int
+
+
+@dataclass
+class RabbitConfig:
     url: str
 
 
 @dataclass
-class MinioSettings:
+class MinioConfig:
     endpoint: str
     access_key: str
     secret_key: str
 
 
 @dataclass
-class MongoSettings:
+class MongoConfig:
     dsn: str
 
 
 @dataclass
-class PostgresSettings:
+class PostgresConfig:
     dsn: str
 
 
@@ -52,27 +61,34 @@ def load_str_env(key: str) -> str:
     return env
 
 
-def get_minio_settings() -> MinioSettings:
-    return MinioSettings(
+def get_minio_settings() -> MinioConfig:
+    return MinioConfig(
         endpoint=load_str_env(MINIO_ENDPOINT_ENV),
         access_key=load_str_env(MINIO_ACCESS_KEY_ENV),
         secret_key=load_str_env(MINIO_SECRET_KEY_ENV),
     )
 
 
-def get_mongo_settings() -> MongoSettings:
-    return MongoSettings(
+def get_mongo_settings() -> MongoConfig:
+    return MongoConfig(
         dsn=load_str_env(MONGO_DSN_ENV),
     )
 
 
-def get_postgres_settings() -> PostgresSettings:
-    return PostgresSettings(
+def get_postgres_settings() -> PostgresConfig:
+    return PostgresConfig(
         dsn=load_str_env(POSTGRES_DSN_ENV),
     )
 
 
-def get_rabbit_settings() -> RabbitSettings:
-    return RabbitSettings(
+def get_rabbit_settings() -> RabbitConfig:
+    return RabbitConfig(
         url=load_str_env(RABBIT_URL_ENV),
+    )
+
+
+def get_redis_config() -> RedisConfig:
+    return RedisConfig(
+        host=load_str_env(REDIS_HOST_ENV),
+        port=int(load_str_env(REDIS_PORT_ENV)),
     )

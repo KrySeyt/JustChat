@@ -8,6 +8,8 @@ services:
       - ./src/:/just_chat/src:ro
       - ./alembic:/just_chat/alembic
     environment:
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
       - RABBIT_URL=amqp://user:password@rabbit:5672/
       - POSTGRES_DSN=postgresql://postgres:postgres@postgres:5432/postgres
       - MONGO_DSN=mongodb://mongo:27017/just_chat
@@ -26,6 +28,8 @@ services:
       rabbit:
         condition: service_healthy
       minio:
+        condition: service_started
+      redis:
         condition: service_started
 
   notification_service:
@@ -68,6 +72,12 @@ services:
     entrypoint: bash -c "
       mkdir -p /data/images &&
       minio server --console-address ":9001" /data"
+
+  redis:
+    image: redis:latest
+    environment:
+      - REDIS_PASSWORD="redis"
+      - REDIS_PORT=6379
 
   rabbit:
     image: bitnami/rabbitmq

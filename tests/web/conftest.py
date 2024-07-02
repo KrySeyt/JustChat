@@ -6,6 +6,7 @@ import pytest_asyncio
 from fastapi.testclient import TestClient
 from motor.motor_asyncio import AsyncIOMotorClient, AsyncIOMotorDatabase
 from psycopg import AsyncConnection
+from redis.asyncio import Redis
 
 from just_chat.chat.adapters.raw_sql_chat_gateway import RawSQLChatGateway
 from just_chat.chat.application.interfaces.chat_gateway import ChatGateway
@@ -13,7 +14,8 @@ from just_chat.common.external.database.postgres_sql_executor import PsycopgSQLE
 from just_chat.common.external.database.postgres_transaction_manager import PsycopgTransactionManager
 from just_chat.common.external.security.password_provider import HashingPasswordProvider
 from just_chat.common.application.password_provider import PasswordProvider
-from just_chat.main.config import MongoSettings, PostgresSettings, get_mongo_settings, get_postgres_settings
+from just_chat.main.config import MongoConfig, PostgresConfig, get_mongo_settings, get_postgres_settings, \
+    get_redis_config
 from just_chat.main.web import create_app
 from just_chat.message.external.database.mongo_message_gateway import MongoMessageGateway
 from just_chat.message.application.interfaces.message_gateway import MessageGateway
@@ -21,15 +23,16 @@ from just_chat.user.external.database.ram_session_gateway import RAMSessionGatew
 from just_chat.user.adapters.raw_sql_user_gateway import RawSQLUserGateway
 from just_chat.user.application.interfaces.session_gateway import SessionGateway
 from just_chat.user.application.interfaces.user_gateway import UserGateway
+from just_chat.user.external.database.redis_session_gateway import RedisSessionGateway
 
 
 @pytest.fixture()
-def postgres_settings() -> PostgresSettings:
+def postgres_settings() -> PostgresConfig:
     return get_postgres_settings()
 
 
 @pytest.fixture()
-def mongo_settings() -> MongoSettings:
+def mongo_settings() -> MongoConfig:
     return get_mongo_settings()
 
 
@@ -56,9 +59,13 @@ def user_gateway(psycopg_conn) -> UserGateway:
     return RawSQLUserGateway(PsycopgSQLExecutor(psycopg_conn))
 
 
-@pytest.fixture()
-def session_gateway() -> SessionGateway:
-    return RAMSessionGateway()
+@pytest_asyncio.fixture()
+async def session_gateway() -> SessionGateway:
+    redis_config = get_redis_config()
+    async with (
+        Redis(host=redis_config.host, port=redis_config.port) as redis,
+    ):
+        yield RedisSessionGateway(redis)
 
 
 @pytest.fixture()

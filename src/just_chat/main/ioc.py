@@ -2,11 +2,11 @@ from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
 
 import aiohttp
-from faststream.rabbit import RabbitBroker
 from minio import Minio
 from motor.motor_asyncio import AsyncIOMotorDatabase
 from passlib.handlers.argon2 import argon2
 from psycopg import AsyncConnection
+from redis.asyncio import Redis
 
 from just_chat.chat.adapters.interactor_factory import ChatInteractorFactory
 from just_chat.chat.adapters.raw_sql_chat_gateway import RawSQLChatGateway
@@ -25,8 +25,8 @@ from just_chat.event.adapters.interactor_factory import EventInteractorFactory
 from just_chat.event.application.add_user_event_bus import AddUserEventBus
 from just_chat.event.application.delete_user_event_bus import DeleteUserEventBus
 from just_chat.event.domain.event import EventService
-from just_chat.event.external.database.rabbit_event_gateway import RabbitEventGateway
 from just_chat.event.external.database.ram_event_gateway import RAMEventGateway
+from just_chat.main.config import RedisConfig
 from just_chat.message.adapters.interactor_factory import MessageInteractorFactory
 from just_chat.message.application.create_message import CreateMessage
 from just_chat.message.application.get_chat_messages import GetChatMessages
@@ -40,6 +40,7 @@ from just_chat.user.application.id_provider import IdProvider
 from just_chat.user.application.login import Login
 from just_chat.user.domain.user import UserService
 from just_chat.user.external.database.ram_session_gateway import RAMSessionGateway
+from just_chat.user.external.database.redis_session_gateway import RedisSessionGateway
 
 
 class ChatIoC(ChatInteractorFactory):
@@ -86,9 +87,9 @@ class ChatIoC(ChatInteractorFactory):
 
 
 class UserIoC(UserInteractorFactory):
-    def __init__(self, postgres_uri: str) -> None:
+    def __init__(self, postgres_uri: str, redis_config: RedisConfig) -> None:
         self._postgres_uri = postgres_uri
-        self._session_gateway = RAMSessionGateway()
+        self._redis_config = redis_config
         self._password_provider = HashingPasswordProvider(argon2)
 
     @asynccontextmanager
@@ -101,9 +102,14 @@ class UserIoC(UserInteractorFactory):
 
     @asynccontextmanager
     async def get_user_id_by_token(self) -> AsyncGenerator[GetUserIdByToken, None]:
-        yield GetUserIdByToken(
-            self._session_gateway,
-        )
+        async with (
+            Redis(host=self._redis_config.host, port=self._redis_config.port) as redis,
+        ):
+            yield GetUserIdByToken(
+                RedisSessionGateway(
+                    redis=redis,
+                ),
+            )
 
     @asynccontextmanager
     async def create_user(self) -> AsyncGenerator[CreateUser, None]:
@@ -116,11 +122,16 @@ class UserIoC(UserInteractorFactory):
 
     @asynccontextmanager
     async def login(self) -> AsyncGenerator[Login, None]:
-        async with await AsyncConnection.connect(self._postgres_uri) as conn:
+        async with (
+            await AsyncConnection.connect(self._postgres_uri) as conn,
+            Redis(host=self._redis_config.host, port=self._redis_config.port) as redis,
+        ):
             yield Login(
                 UserService(),
                 RawSQLUserGateway(PsycopgSQLExecutor(conn)),
-                self._session_gateway,
+                RedisSessionGateway(
+                    redis=redis,
+                ),
                 self._password_provider,
                 transaction_manager=PsycopgTransactionManager(conn),
             )
@@ -130,27 +141,28 @@ class MessageIoC(MessageInteractorFactory):
     def __init__(
             self,
             postgres_url: str,
-            rabbit_url: str,
+            # rabbit_url: str,
             mongo_db: AsyncIOMotorDatabase,
             minio_client: Minio,
     ) -> None:
         self._minio_client = minio_client
         self._mongo_db = mongo_db
         self._postgres_uri = postgres_url
-        self._rabbit_url = rabbit_url
+        # self._rabbit_url = rabbit_url
 
     @asynccontextmanager
     async def create_message(self, id_provider: IdProvider) -> AsyncGenerator[CreateMessage, None]:
         async with (
             await AsyncConnection.connect(self._postgres_uri) as conn,
             aiohttp.ClientSession() as session,
-            RabbitBroker(self._rabbit_url) as rabbit_broker,
+            # RabbitBroker(self._rabbit_url) as rabbit_broker,
         ):
             yield CreateMessage(
                 ChatAccessService(),
                 RawSQLChatGateway(PsycopgSQLExecutor(conn)),
                 EventService(),
-                RabbitEventGateway(rabbit_broker),
+                # RabbitEventGateway(rabbit_broker),
+                RAMEventGateway(),
                 MongoMessageGateway(self._mongo_db),
                 id_provider=id_provider,
                 transaction_manager=PsycopgTransactionManager(conn),

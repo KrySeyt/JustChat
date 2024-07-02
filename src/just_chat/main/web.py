@@ -12,7 +12,13 @@ from just_chat.common.application.password_provider import PasswordProvider
 from just_chat.common.external.security.password_provider import HashingPasswordProvider
 from just_chat.event.adapters.interactor_factory import EventInteractorFactory
 from just_chat.event.external.web import event_router
-from just_chat.main.config import get_minio_settings, get_mongo_settings, get_postgres_settings, get_rabbit_settings
+from just_chat.main.config import (
+    get_minio_settings,
+    get_mongo_settings,
+    get_postgres_settings,
+    get_rabbit_settings,
+    get_redis_config,
+)
 from just_chat.main.ioc import ChatIoC, EventIoC, MessageIoC, UserIoC
 from just_chat.message.adapters.interactor_factory import MessageInteractorFactory
 from just_chat.message.external.web import message_router
@@ -32,7 +38,8 @@ def create_app() -> FastAPI:
     postgres_settings = get_postgres_settings()
     mongo_settings = get_mongo_settings()
     minio_settings = get_minio_settings()
-    rabbit_settings = get_rabbit_settings()
+    # rabbit_settings = get_rabbit_settings()
+    redis_config = get_redis_config()
 
     mongo_client = AsyncIOMotorClient(mongo_settings.dsn)
     _, mongo_db_name = mongo_settings.dsn.rsplit("/", maxsplit=1)
@@ -46,8 +53,8 @@ def create_app() -> FastAPI:
     )
 
     chat_ioc = ChatIoC(postgres_settings.dsn)
-    user_ioc = UserIoC(postgres_settings.dsn)
-    message_ioc = MessageIoC(postgres_settings.dsn, rabbit_settings.url, mongo_db, minio)
+    user_ioc = UserIoC(postgres_settings.dsn, redis_config)
+    message_ioc = MessageIoC(postgres_settings.dsn, mongo_db, minio)
     event_ioc = EventIoC(mongo_db)
 
     app = FastAPI()

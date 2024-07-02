@@ -78,6 +78,7 @@ dependencies = [
     "alembic",
     "motor",
     "minio",
+    "redis",
     "faststream[rabbit]",
 ]
 

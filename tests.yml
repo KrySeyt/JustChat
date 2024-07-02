@@ -9,6 +9,9 @@ services:
       - ./alembic:/just_chat/alembic
       - ./tests:/just_chat/tests
     environment:
+        - REDIS_HOST=redis
+        - REDIS_PORT=6379
+        - RABBIT_URL=amqp://user:password@rabbit:5672/
         - POSTGRES_DSN=postgresql://postgres:postgres@postgres:5432/postgres
         - MONGO_DSN=mongodb://mongo:27017/just_chat
         - MINIO_ENDPOINT=minio:9000
@@ -23,7 +26,9 @@ services:
         condition: service_started
       minio:
         condition: service_started
-    entrypoint: bash -c "alembic upgrade head && pytest -vvv"
+      redis:
+        condition: service_started
+    entrypoint: bash -c "alembic upgrade head && pytest -vvv -s"
 
   postgres:
     image: postgres:latest
@@ -39,6 +44,12 @@ services:
   mongo:
     image: mongo:latest
     restart: always
+
+  redis:
+    image: redis:latest
+    environment:
+      - REDIS_PASSWORD="redis"
+      - REDIS_PORT=6379
 
   minio:
     hostname: minio

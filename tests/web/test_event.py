@@ -1,4 +1,8 @@
+import asyncio
+import json
+
 import pytest
+from websockets import connect
 
 from just_chat.chat.domain.chat import Chat
 from just_chat.user.domain.user import User
@@ -46,8 +50,8 @@ async def test_new_message_event(
     headers = {
         "Cookie": f"token={token}",
     }
-    with client.websocket_connect(r"ws://localhost:8000/event/listen", headers=headers) as websocket:
 
+    async with connect(r"ws://notification_service:8001/", extra_headers=headers) as websocket:
         response = client.post(
             r"/message",
             json={
@@ -60,7 +64,7 @@ async def test_new_message_event(
 
         response_json = response.json()
 
-        assert websocket.receive_json() == {
+        assert json.loads(await websocket.recv()) == {
             "event": "new_message",
             "message": response_json,
         }

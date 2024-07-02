@@ -1,7 +1,7 @@
 from collections.abc import Sequence
 from dataclasses import asdict
 
-from faststream.rabbit import ExchangeType, RabbitBroker, RabbitExchange
+from faststream.rabbit import ExchangeType, RabbitBroker, RabbitExchange, RabbitQueue
 
 from just_chat.event.application.interfaces.event_bus import EventBus
 from just_chat.event.application.interfaces.event_gateway import EventGateway
@@ -18,9 +18,13 @@ class RabbitEventGateway(EventGateway):
         )
 
     async def send_new_message_event(self, event: NewMessage, target_user_ids: Sequence[UserId]) -> None:
+        await self._broker.declare_exchange(self._exchange)
+        await self._broker.declare_queue(RabbitQueue(name="t"))
+
         await self._broker.publish(
             message={
                     "event": "new_message",
+                    "user_ids": list(target_user_ids),
                     "message": asdict(event.message),
                 },
             exchange=self._exchange,

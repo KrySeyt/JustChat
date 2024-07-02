@@ -38,7 +38,7 @@ def create_app() -> FastAPI:
     postgres_settings = get_postgres_settings()
     mongo_settings = get_mongo_settings()
     minio_settings = get_minio_settings()
-    # rabbit_settings = get_rabbit_settings()
+    rabbit_settings = get_rabbit_settings()
     redis_config = get_redis_config()
 
     mongo_client = AsyncIOMotorClient(mongo_settings.dsn)
@@ -54,7 +54,7 @@ def create_app() -> FastAPI:
 
     chat_ioc = ChatIoC(postgres_settings.dsn)
     user_ioc = UserIoC(postgres_settings.dsn, redis_config)
-    message_ioc = MessageIoC(postgres_settings.dsn, mongo_db, minio)
+    message_ioc = MessageIoC(postgres_settings.dsn, rabbit_settings.url, mongo_db, minio)
     event_ioc = EventIoC(mongo_db)
 
     app = FastAPI()
@@ -62,7 +62,7 @@ def create_app() -> FastAPI:
     app.include_router(user_router)
     app.include_router(chat_router)
     app.include_router(message_router)
-    app.include_router(event_router)
+    # app.include_router(event_router)
 
     app.dependency_overrides[ChatInteractorFactory] = singleton(chat_ioc)
     app.dependency_overrides[UserInteractorFactory] = singleton(user_ioc)

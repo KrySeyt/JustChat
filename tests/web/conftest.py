@@ -14,12 +14,16 @@ from just_chat.common.external.database.postgres_sql_executor import PsycopgSQLE
 from just_chat.common.external.database.postgres_transaction_manager import PsycopgTransactionManager
 from just_chat.common.external.security.password_provider import HashingPasswordProvider
 from just_chat.common.application.password_provider import PasswordProvider
-from just_chat.main.config import MongoConfig, PostgresConfig, get_mongo_settings, get_postgres_settings, \
-    get_redis_config
+from just_chat.main.config import (
+    MongoConfig,
+    PostgresConfig,
+    get_mongo_settings,
+    get_postgres_settings,
+    get_redis_config,
+)
 from just_chat.main.web import create_app
 from just_chat.message.external.database.mongo_message_gateway import MongoMessageGateway
 from just_chat.message.application.interfaces.message_gateway import MessageGateway
-from just_chat.user.external.database.ram_session_gateway import RAMSessionGateway
 from just_chat.user.adapters.raw_sql_user_gateway import RawSQLUserGateway
 from just_chat.user.application.interfaces.session_gateway import SessionGateway
 from just_chat.user.application.interfaces.user_gateway import UserGateway

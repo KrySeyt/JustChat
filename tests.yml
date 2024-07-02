@@ -9,6 +9,7 @@ services:
       - ./alembic:/just_chat/alembic
       - ./tests:/just_chat/tests
     environment:
+        - RABBIT_URL=amqp://user:password@rabbit:5672/
         - POSTGRES_DSN=postgresql://postgres:postgres@postgres:5432/postgres
         - MONGO_DSN=mongodb://mongo:27017/just_chat
         - MINIO_ENDPOINT=minio:9000
@@ -17,13 +18,29 @@ services:
     ports:
         - "8000:8000"
     depends_on:
+      notification_service:
+        condition: service_started
       postgres:
         condition: service_healthy
       mongo:
         condition: service_started
       minio:
         condition: service_started
-    entrypoint: bash -c "alembic upgrade head && pytest -vvv"
+    entrypoint: bash -c "alembic upgrade head && pytest -vvv -s"
+
+  notification_service:
+    build:
+      dockerfile: Dockerfile.dev
+    volumes:
+      - ./src/:/just_chat/src:ro
+    environment:
+      - RABBIT_URL=amqp://user:password@rabbit:5672/
+    ports:
+      - "8001:8001"
+    depends_on:
+      rabbit:
+        condition: service_healthy
+    entrypoint: gunicorn -b 0.0.0.0:8001 -k uvicorn.workers.UvicornWorker notification_service.main:app --reload
 
   postgres:
     image: postgres:latest
@@ -55,3 +72,14 @@ services:
       mkdir -p /data/images &&
       minio server --console-address ":9001" /data"
 
+  rabbit:
+    image: bitnami/rabbitmq
+    environment:
+      RABBITMQ_DEFAULT_PASS: password
+      RABBITMQ_DEFAULT_USER: user
+    healthcheck:
+      test: rabbitmq-diagnostics -q ping
+      interval: 30s
+      timeout: 30s
+      retries: 3
+    entrypoint: rabbitmq-server $@

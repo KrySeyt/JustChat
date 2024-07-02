@@ -21,6 +21,7 @@ class RabbitEventGateway(EventGateway):
         await self._broker.publish(
             message={
                     "event": "new_message",
+                    "user_ids": list(target_user_ids),
                     "message": asdict(event.message),
                 },
             exchange=self._exchange,

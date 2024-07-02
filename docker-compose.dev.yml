@@ -35,10 +35,13 @@ services:
       - ./src/:/just_chat/src:ro
     environment:
       - RABBIT_URL=amqp://user:password@rabbit:5672/
+      - POSTGRES_DSN=postgresql://postgres:postgres@postgres:5432/postgres
+    ports:
+      - "8001:8001"
     depends_on:
       rabbit:
         condition: service_healthy
-    entrypoint: python -m notification_service
+    entrypoint: gunicorn -b 0.0.0.0:8001 -k uvicorn.workers.UvicornWorker notification_service.main:app --reload
 
   postgres:
     image: postgres:latest

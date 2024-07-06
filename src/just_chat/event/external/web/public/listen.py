@@ -1,3 +1,8 @@
+"""
+This is an old code. Now this functionality moved to a separate notification service.
+Not deleted for possible future use
+"""
+
 import asyncio
 from typing import Annotated, Any
 

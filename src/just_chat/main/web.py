@@ -11,7 +11,6 @@ from just_chat.chat.external.web_api import chat_router
 from just_chat.common.application.password_provider import PasswordProvider
 from just_chat.common.external.security.password_provider import HashingPasswordProvider
 from just_chat.event.adapters.interactor_factory import EventInteractorFactory
-from just_chat.event.external.web import event_router
 from just_chat.main.config import (
     get_minio_settings,
     get_mongo_settings,
@@ -62,7 +61,6 @@ def create_app() -> FastAPI:
     app.include_router(user_router)
     app.include_router(chat_router)
     app.include_router(message_router)
-    # app.include_router(event_router)
 
     app.dependency_overrides[ChatInteractorFactory] = singleton(chat_ioc)
     app.dependency_overrides[UserInteractorFactory] = singleton(user_ioc)

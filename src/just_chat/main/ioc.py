@@ -2,12 +2,12 @@ from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
 
 import aiohttp
+from faststream.rabbit import RabbitBroker
 from minio import Minio
 from motor.motor_asyncio import AsyncIOMotorDatabase
 from passlib.handlers.argon2 import argon2
 from psycopg import AsyncConnection
 from redis.asyncio import Redis
-from faststream.rabbit import RabbitBroker
 
 from just_chat.chat.adapters.interactor_factory import ChatInteractorFactory
 from just_chat.chat.adapters.raw_sql_chat_gateway import RawSQLChatGateway
@@ -41,7 +41,6 @@ from just_chat.user.application.get_user_by_token import GetUserIdByToken
 from just_chat.user.application.id_provider import IdProvider
 from just_chat.user.application.login import Login
 from just_chat.user.domain.user import UserService
-from just_chat.user.external.database.ram_session_gateway import RAMSessionGateway
 from just_chat.user.external.database.redis_session_gateway import RedisSessionGateway
 
 
@@ -164,7 +163,6 @@ class MessageIoC(MessageInteractorFactory):
                 RawSQLChatGateway(PsycopgSQLExecutor(conn)),
                 EventService(),
                 RabbitEventGateway(rabbit_broker),
-                # RAMEventGateway(),
                 MongoMessageGateway(self._mongo_db),
                 id_provider=id_provider,
                 transaction_manager=PsycopgTransactionManager(conn),

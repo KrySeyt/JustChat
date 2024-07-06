@@ -1,11 +1,12 @@
 import asyncio
 import os
+from collections.abc import AsyncGenerator, Iterable
 from contextlib import asynccontextmanager
 from typing import Annotated
 
-from fastapi import FastAPI, Depends
-from fastapi.websockets import WebSocket, WebSocketState, WebSocketDisconnect
-from faststream.rabbit import RabbitBroker, RabbitMessage, ExchangeType, RabbitExchange
+from fastapi import Depends, FastAPI
+from fastapi.websockets import WebSocket, WebSocketDisconnect, WebSocketState
+from faststream.rabbit import ExchangeType, RabbitBroker, RabbitExchange, RabbitMessage
 
 from just_chat.common.external.web.dependencies.stub import Stub
 from just_chat.main.config import get_postgres_settings, get_redis_config
@@ -22,7 +23,7 @@ websockets: dict[UserId, WebSocket] = {}
 async def websocket_endpoint(
         websocket: WebSocket,
         id_provider: Annotated[IdProvider, Depends(Stub(IdProvider))],
-):
+) -> None:
     await websocket.accept()
     user_id = await id_provider.get_current_user_id()
     websockets[user_id] = websocket
@@ -35,10 +36,15 @@ async def websocket_endpoint(
 
 async def event_handler(message: RabbitMessage) -> None:
     data = message.decoded_body
+    assert isinstance(data, dict)
+
     user_ids = data.pop("user_ids")
+    assert isinstance(user_ids, Iterable)
 
     for user_id in user_ids:
-        ws = websockets.get(user_id, None)
+        assert isinstance(user_id, int)
+
+        ws = websockets.get(user_id)
 
         if ws:
             try:
@@ -48,7 +54,7 @@ async def event_handler(message: RabbitMessage) -> None:
 
 
 @asynccontextmanager
-async def lifespan(app: FastAPI) -> None:
+async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     async with app.state.rabbit_broker:
         await app.state.rabbit_broker.start()
         yield
